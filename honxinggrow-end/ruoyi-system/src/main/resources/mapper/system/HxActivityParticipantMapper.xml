@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.HxActivityParticipantMapper">
+
+    <resultMap id="HxActivityParticipantResult" type="com.ruoyi.system.domain.HxActivityParticipant">
+        <id     column="participant_id"   property="participantId"/>
+        <result column="activity_id"      property="activityId"/>
+        <result column="user_id"          property="userId"/>
+        <result column="user_name"        property="userName"/>
+        <result column="join_time"        property="joinTime"/>
+        <result column="status"           property="status"/>
+        <result column="proof_image_url"  property="proofImageUrl"/>
+        <result column="proof_status"     property="proofStatus"/>
+        <result column="proof_submit_time" property="proofSubmitTime"/>
+        <result column="proof_audit_by"   property="proofAuditBy"/>
+        <result column="proof_audit_time" property="proofAuditTime"/>
+        <result column="proof_audit_remark" property="proofAuditRemark"/>
+        <result column="reward_granted"   property="rewardGranted"/>
+        <result column="reward_time"      property="rewardTime"/>
+        <result column="reward_points"    property="rewardPoints"/>
+        <result column="create_by"        property="createBy"/>
+        <result column="create_time"      property="createTime"/>
+        <result column="update_by"        property="updateBy"/>
+        <result column="update_time"      property="updateTime"/>
+        <result column="remark"           property="remark"/>
+    </resultMap>
+
+    <sql id="selectParticipantColumns">
+        select participant_id, activity_id, user_id, user_name, join_time, status,
+               proof_image_url, proof_status, proof_submit_time, proof_audit_by, proof_audit_time,
+               proof_audit_remark, reward_granted, reward_time, reward_points,
+               create_by, create_time, update_by, update_time, remark
+        from hx_activity_participant
+    </sql>
+
+    <select id="selectById" parameterType="Long" resultMap="HxActivityParticipantResult">
+        <include refid="selectParticipantColumns"/>
+        where participant_id = #{participantId}
+    </select>
+
+    <select id="selectByActivityId" parameterType="Long" resultMap="HxActivityParticipantResult">
+        <include refid="selectParticipantColumns"/>
+        where activity_id = #{activityId}
+        order by join_time desc
+    </select>
+
+    <select id="selectByActivityIdAndUserId" resultMap="HxActivityParticipantResult">
+        <include refid="selectParticipantColumns"/>
+        where activity_id = #{activityId} and user_id = #{userId}
+    </select>
+
+    <select id="selectUserActivityOverview" resultType="java.util.HashMap">
+        select
+            a.activity_id        as activityId,
+            a.title              as title,
+            a.summary            as summary,
+            a.cover_url          as coverUrl,
+            a.start_time         as startTime,
+            a.end_time           as endTime,
+            a.location           as location,
+            a.max_participants   as maxParticipants,
+            a.participant_count  as participantCount,
+            a.status             as activityStatus,
+            p.participant_id     as participantId,
+            p.status             as joinStatus,
+            p.join_time          as joinTime,
+            p.proof_status       as proofStatus,
+            p.proof_image_url    as proofImageUrl,
+            p.proof_audit_remark as proofAuditRemark,
+            p.reward_granted     as rewardGranted,
+            p.reward_points      as rewardPoints,
+            p.reward_time        as rewardTime
+        from hx_activity_participant p
+        inner join hx_activity a on p.activity_id = a.activity_id
+        where p.user_id = #{userId}
+          and p.status = '1'
+          and (a.del_flag is null or a.del_flag &lt;&gt; '2')
+        order by p.join_time desc
+    </select>
+
+    <insert id="insertHxActivityParticipant" parameterType="com.ruoyi.system.domain.HxActivityParticipant" useGeneratedKeys="true" keyProperty="participantId">
+        insert into hx_activity_participant(
+            activity_id, user_id, user_name, join_time, status,
+            proof_image_url, proof_status, proof_submit_time, proof_audit_by, proof_audit_time,
+            proof_audit_remark, reward_granted, reward_time, reward_points,
+            create_by, create_time, update_by, update_time, remark
+        ) values (
+            #{activityId}, #{userId}, #{userName}, #{joinTime}, #{status},
+            #{proofImageUrl}, #{proofStatus}, #{proofSubmitTime}, #{proofAuditBy}, #{proofAuditTime},
+            #{proofAuditRemark}, #{rewardGranted}, #{rewardTime}, #{rewardPoints},
+            #{createBy}, #{createTime}, #{updateBy}, #{updateTime}, #{remark}
+        )
+    </insert>
+
+    <update id="updateHxActivityParticipant" parameterType="com.ruoyi.system.domain.HxActivityParticipant">
+        update hx_activity_participant
+        <set>
+            <if test="activityId != null">activity_id = #{activityId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="userName != null">user_name = #{userName},</if>
+            <if test="joinTime != null">join_time = #{joinTime},</if>
+            <if test="status != null">status = #{status},</if>
+            proof_image_url = #{proofImageUrl},
+            proof_status = #{proofStatus},
+            proof_submit_time = #{proofSubmitTime},
+            proof_audit_by = #{proofAuditBy},
+            proof_audit_time = #{proofAuditTime},
+            proof_audit_remark = #{proofAuditRemark},
+            reward_granted = #{rewardGranted},
+            reward_time = #{rewardTime},
+            reward_points = #{rewardPoints},
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            update_time = #{updateTime},
+            <if test="remark != null">remark = #{remark},</if>
+        </set>
+        where participant_id = #{participantId}
+    </update>
+
+    <delete id="deleteById" parameterType="Long">
+        delete from hx_activity_participant where participant_id = #{participantId}
+    </delete>
+
+    <delete id="deleteByIds" parameterType="Long">
+        delete from hx_activity_participant where participant_id in
+        <foreach collection="array" item="participantId" open="(" separator="," close=")">
+            #{participantId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteByActivityId" parameterType="Long">
+        delete from hx_activity_participant where activity_id = #{activityId}
+    </delete>
+
+    <select id="selectDailyCountByUserAndDateRange" resultType="java.util.HashMap">
+        select 
+            DATE(join_time) as date,
+            COUNT(*) as count
+        from hx_activity_participant
+        where user_id = #{userId}
+          and status = '1'
+          and join_time >= #{startDate}
+          and join_time &lt;= #{endDate}
+        group by DATE(join_time)
+        order by date asc
+    </select>
+
+    <select id="selectHourlyCountByUserAndDateRange" resultType="java.util.HashMap">
+        select 
+            HOUR(join_time) as hour,
+            COUNT(*) as count
+        from hx_activity_participant
+        where user_id = #{userId}
+          and status = '1'
+          and join_time >= #{startDate}
+          and join_time &lt;= #{endDate}
+        group by HOUR(join_time)
+        order by hour asc
+    </select>
+
+    <select id="selectStudentActivityList" resultType="java.util.HashMap">
+        select
+            a.activity_id        as activityId,
+            a.title              as title,
+            a.status             as activityStatus,
+            a.start_time         as startTime,
+            a.end_time           as endTime,
+            p.participant_id     as participantId,
+            p.join_time          as joinTime,
+            p.status             as joinStatus,
+            p.proof_status       as proofStatus,
+            p.proof_submit_time  as proofSubmitTime,
+            p.proof_audit_by     as proofAuditBy,
+            p.proof_audit_time   as proofAuditTime,
+            p.proof_audit_remark as proofAuditRemark,
+            p.reward_granted     as rewardGranted,
+            p.reward_points      as rewardPoints,
+            p.reward_time        as rewardTime,
+            case
+                when NOW() &gt; a.end_time then '已结束'
+                when NOW() &lt; a.start_time then '未开始'
+                else '进行中'
+            end as status,
+            case
+                when NOW() &gt; a.end_time then 'default'
+                when NOW() &lt; a.start_time then 'info'
+                else 'success'
+            end as statusType
+        from hx_activity_participant p
+        inner join hx_activity a on p.activity_id = a.activity_id
+        where p.user_id = #{userId}
+          and (p.status = '1' or p.status = '0' or p.status = '2')
+          and (a.del_flag is null or a.del_flag &lt;&gt; '2')
+        order by p.join_time desc
+    </select>
+</mapper>

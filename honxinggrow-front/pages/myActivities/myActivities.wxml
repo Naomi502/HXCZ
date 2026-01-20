@@ -1,0 +1,148 @@
+<view class="page" animation="{{pageAnim}}">
+  <!-- 背景装饰 -->
+  <view class="nebula-bg">
+    <view class="blob blob-1"></view>
+    <view class="blob blob-2"></view>
+  </view>
+
+  <!-- 头部区域 -->
+  <view class="header-section">
+    <!-- 顶部返回按钮 -->
+    <view class="back-btn" style="top: {{capsuleTop}}px;" bindtap="handleBack">
+      <text class="back-arrow">‹</text>
+    </view>
+    
+    <!-- 导航栏标题占位 (适配自定义导航栏) -->
+    <view class="nav-placeholder"></view>
+    
+    <view class="header-content animate-slide-down">
+      <view class="title-group">
+        <view class="page-title">我的活动</view>
+        <view class="page-subtitle">记录成长的每一步</view>
+      </view>
+      
+      <!-- 数据概览卡片 (玻璃态) -->
+      <view class="summary-glass-card">
+        <view class="summary-item">
+          <text class="summary-num">{{activityList.length}}</text>
+          <text class="summary-label">已报名</text>
+        </view>
+        <view class="summary-line"></view>
+        <view class="summary-item">
+          <text class="summary-num">{{ongoingCount}}</text>
+          <text class="summary-label">进行中</text>
+        </view>
+        <view class="summary-line"></view>
+        <view class="summary-item">
+          <text class="summary-num">{{completedCount}}</text>
+          <text class="summary-label">已完成</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 主体内容容器 -->
+  <view class="main-container animate-slide-up">
+    <!-- 搜索与筛选栏 -->
+    <view class="toolbar">
+      <!-- 搜索框 -->
+      <view class="search-box">
+        <icon class="search-icon" type="search" size="16" color="#9CA3AF" />
+        <input
+          class="search-input"
+          type="text"
+          placeholder="搜索活动..."
+          placeholder-class="placeholder"
+          value="{{searchKeyword}}"
+          bindinput="onSearchInput"
+          confirm-type="search"
+        />
+        <view class="clear-btn" wx:if="{{searchKeyword}}" bindtap="onClearSearch">
+          <icon type="clear" size="16" color="#D1D5DB" />
+        </view>
+      </view>
+
+      <!-- 筛选 Tabs -->
+      <view class="filter-tabs">
+        <view class="tab {{currentFilter === 'all' ? 'active' : ''}}" data-type="all" bindtap="onFilterChange">全部</view>
+        <view class="tab {{currentFilter === 'pending' ? 'active' : ''}}" data-type="pending" bindtap="onFilterChange">审核中</view>
+        <view class="tab {{currentFilter === 'ongoing' ? 'active' : ''}}" data-type="ongoing" bindtap="onFilterChange">进行中</view>
+        <view class="tab {{currentFilter === 'completed' ? 'active' : ''}}" data-type="completed" bindtap="onFilterChange">已完成</view>
+      </view>
+    </view>
+
+    <!-- 活动列表 -->
+    <scroll-view class="list-scroll" scroll-y>
+      <view class="activity-list">
+        <!-- 空状态 -->
+        <view class="empty-state" wx:if="{{!loading && filteredList.length === 0}}">
+          <view class="empty-icon">📂</view>
+          <text class="empty-text">暂无相关活动</text>
+          <text class="empty-sub">快去发现更多精彩活动吧</text>
+        </view>
+
+        <!-- 活动卡片 -->
+        <view 
+          class="activity-card" 
+          wx:for="{{filteredList}}" 
+          wx:key="activityId" 
+          data-id="{{item.activityId}}" 
+          bindtap="viewDetail"
+          hover-class="card-hover"
+        >
+          <!-- 顶部状态条 -->
+          <view class="card-status-bar">
+            <view class="status-badge {{item.statusType}}">
+              <view class="status-dot"></view>
+              {{item.statusText}}
+            </view>
+            <view class="join-time">报名于 {{item.joinTime}}</view>
+          </view>
+
+          <!-- 主要内容区 -->
+          <view class="card-main">
+            <image class="card-cover" src="{{item.coverUrl}}" mode="aspectFill"></image>
+            <view class="card-info">
+              <view class="card-title">{{item.title}}</view>
+              
+              <view class="meta-row">
+                <view class="meta-item">
+                  <text class="icon">📍</text>
+                  <text class="text">{{item.location}}</text>
+                </view>
+              </view>
+              <view class="meta-row">
+                <view class="meta-item">
+                  <text class="icon">🕒</text>
+                  <text class="text">{{item.timeRange}}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 底部证明/奖励区 -->
+          <view class="card-footer">
+            <view class="proof-box {{item.proofStatus === '2' ? 'approved' : (item.proofStatus === '3' ? 'rejected' : 'pending')}}">
+              <text class="label">证明状态：</text>
+              <text class="value">{{item.proofStatusText}}</text>
+            </view>
+            
+            <view class="reward-box" wx:if="{{item.rewardGranted}}">
+              <text class="reward-icon">🎁</text>
+              <text class="reward-val">+{{item.rewardPoints}} 积分</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- Loading -->
+        <view class="loading-state" wx:if="{{loading}}">
+          <view class="spinner"></view>
+          <text>加载中...</text>
+        </view>
+        
+        <!-- Bottom Spacer -->
+        <view style="height: 40px;"></view>
+      </view>
+    </scroll-view>
+  </view>
+</view>

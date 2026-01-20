@@ -1,0 +1,6 @@
+{
+  "navigationStyle": "custom",
+  "navigationBarTitleText": "心灵树洞",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark"
+}

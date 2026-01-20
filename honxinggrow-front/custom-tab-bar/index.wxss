@@ -1,0 +1,120 @@
+.tab-bar {
+  position: fixed;
+  bottom: 40rpx;
+  left: 30rpx;
+  right: 30rpx;
+  height: 100rpx;
+  background: rgba(255, 255, 255, 0.7); /* 降低不透明度，增强磨砂感 */
+  display: flex;
+  align-items: center;
+  box-shadow: 0 10rpx 40rpx rgba(0, 0, 0, 0.08);
+  border-radius: 50rpx;
+  z-index: 9999;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  overflow: hidden;
+  /* 确保初始状态不透明 */
+  transition: opacity 0.3s ease; 
+}
+
+/* 占位符，防止首次渲染闪烁 */
+.tab-bar::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* background: rgba(255, 255, 255, 0.95); */
+  z-index: -2;
+}
+
+.tab-bar-item {
+  flex: 1;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  position: relative;
+  height: 100%;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 选中项的背景装饰 */
+.tab-bar-item.selected {
+  /* 选中时略微放大，或者给一个背景 */
+}
+
+/* 选中项增加一个药丸背景容器 */
+.tab-bar-item::before {
+  content: '';
+  position: absolute;
+  width: 90%;
+  height: 80%;
+  background-color: #fff0e5; /* 浅橙色背景 */
+  border-radius: 40rpx;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: -1;
+}
+
+.tab-bar-item.selected::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.icon-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4rpx;
+}
+
+.tab-bar-icon {
+  width: 48rpx;
+  height: 48rpx;
+  display: block;
+  transition: all 0.3s ease;
+}
+
+/* 选中时图标会有微小的跳动动画 */
+.tab-bar-item.selected .tab-bar-icon {
+  transform: translateY(-2rpx) scale(1.05);
+}
+
+.red-dot {
+  position: absolute;
+  top: -2rpx;
+  right: -2rpx;
+  width: 16rpx;
+  height: 16rpx;
+  background-color: #ff4d4f;
+  border-radius: 50%;
+  border: 2rpx solid #fff;
+  z-index: 10;
+}
+
+.tab-bar-text {
+  font-size: 20rpx;
+  color: #999999;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.tab-bar-item.selected .tab-bar-text {
+  color: #ff6700;
+  font-weight: bold;
+  transform: translateY(-2rpx);
+}
+
+/* 给中间增加一点间距（如果有需要） */
+/* .tab-bar-item:nth-child(2) {
+  margin-right: 10rpx;
+}
+.tab-bar-item:nth-child(3) {
+  margin-left: 10rpx;
+} */

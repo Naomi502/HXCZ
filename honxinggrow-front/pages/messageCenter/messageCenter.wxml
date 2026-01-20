@@ -1,0 +1,81 @@
+<view class="page">
+  <!-- 顶部背景 -->
+  <view class="nebula-bg">
+    <view class="blob blob-1"></view>
+    <view class="blob blob-2"></view>
+  </view>
+
+  <!-- 顶部导航栏 -->
+  <view class="header-bar">
+    <view class="back-btn" style="top: {{capsuleTop}}px;" bindtap="handleBack">
+      <text class="back-arrow">‹</text>
+    </view>
+
+    <view class="header-left">
+      <text class="page-title">消息中心</text>
+      <text class="page-subtitle" wx:if="{{unreadCount > 0}}">您有 {{unreadCount}} 条未读消息</text>
+      <text class="page-subtitle" wx:else>暂无未读消息</text>
+    </view>
+    
+    <!-- 一键清除按钮 -->
+    <view class="clear-all-btn" bindtap="clearAll" wx:if="{{messageList.length > 0}}">
+      <text>一键清除</text>
+    </view>
+  </view>
+
+  <!-- 消息列表 -->
+  <scroll-view 
+    class="scroll-container" 
+    scroll-y 
+    enable-back-to-top
+    refresher-enabled
+    refresher-triggered="{{refreshing}}"
+    bindrefresherrefresh="onPullDownRefresh"
+  >
+    <view class="card-list" wx:if="{{messageList.length > 0}}">
+      <block wx:for="{{messageList}}" wx:key="messageId">
+        <view class="message-card animate-slide-up {{item.isRead === '0' ? 'unread-glow' : ''}}" 
+              style="animation-delay: {{index * 0.05}}s" 
+              bindtap="toggleExpand" 
+              data-id="{{item.messageId}}">
+          
+          <view class="card-header">
+            <view class="icon-box {{item.type === '1' ? 'blue' : (item.type === '2' ? 'green' : 'orange')}}">
+              <text wx:if="{{item.type === '1'}}">📢</text>
+              <text wx:elif="{{item.type === '2'}}">🏆</text>
+              <text wx:else>🔔</text>
+            </view>
+            <view class="header-content">
+              <view class="msg-title-row">
+                <text class="msg-title {{item.isRead === '0' ? 'text-unread' : ''}}">{{item.title}}</text>
+                <view class="status-dot" wx:if="{{item.isRead === '0'}}"></view>
+              </view>
+              <text class="msg-time">{{item.createTime}}</text>
+            </view>
+            <view class="arrow-icon {{item.expanded ? 'expanded' : ''}}">›</view>
+          </view>
+          
+          <view class="card-body {{item.expanded ? 'expanded' : ''}}">
+            <view class="content-wrapper">
+              <text class="msg-content">{{item.content}}</text>
+              <view class="actions">
+                <view class="delete-btn" catchtap="deleteMessage" data-id="{{item.messageId}}">
+                  <text class="delete-icon">🗑️</text> 删除
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </block>
+      
+      <!-- 底部垫高 -->
+      <view style="height: 100px;"></view>
+    </view>
+
+    <view class="empty-state animate-slide-up" wx:else>
+      <view class="empty-icon">📭</view>
+      <text class="empty-text">暂无消息通知</text>
+      <text class="empty-subtext">如果有新消息，会在这里显示哦</text>
+    </view>
+  </scroll-view>
+</view>

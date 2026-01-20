@@ -1,0 +1,97 @@
+<view class="page" animation="{{pageAnim}}">
+  <!-- 星云背景 -->
+  <view class="nebula-bg">
+    <view class="blob blob-1"></view>
+    <view class="blob blob-2"></view>
+  </view>
+
+  <!-- 顶部导航栏 -->
+  <view class="header-section">
+    <!-- 返回按钮 -->
+    <view class="back-btn" style="top: {{capsuleTop}}px;" bindtap="handleBack">
+      <text class="back-arrow">‹</text>
+    </view>
+    
+    <view class="title-group">
+      <view class="page-title">成长历程</view>
+      <view class="page-subtitle">数据见证你的每一次进步</view>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading-overlay">
+    <view class="spinner-container">
+      <view class="loading-spinner"></view>
+    </view>
+    <text class="loading-text">数据加载中...</text>
+  </view>
+
+  <view wx:else class="content animate-slide-up">
+    
+    <!-- 顶部提示 -->
+    <view class="info-bar">
+      <view class="time-badge fade-in">
+        <text class="icon">📅</text>
+        <text>近30天成长轨迹（不包含今天）</text>
+      </view>
+    </view>
+
+    <!-- 获得积分折线图 -->
+    <view class="chart-card">
+      <view class="card-header">
+        <view class="card-title-group">
+          <view class="icon-box type-star">
+            <text>⭐</text>
+          </view>
+          <view class="text-info">
+            <text class="chart-label">获得积分</text>
+            <text class="chart-desc">每日积分获取情况</text>
+          </view>
+        </view>
+      </view>
+      <view class="canvas-container">
+        <canvas canvas-id="pointsChart" class="chart-canvas"></canvas>
+      </view>
+    </view>
+    
+    <!-- 点赞故事折线图 -->
+    <view class="chart-card">
+      <view class="card-header">
+        <view class="card-title-group">
+          <view class="icon-box type-heart">
+            <text>👍</text>
+          </view>
+          <view class="text-info">
+            <text class="chart-label">点赞故事</text>
+            <text class="chart-desc">每日点赞互动统计</text>
+          </view>
+        </view>
+      </view>
+      <view class="canvas-container">
+        <canvas canvas-id="storyLikeChart" class="chart-canvas"></canvas>
+      </view>
+    </view>
+
+    <!-- 参加活动折线图 -->
+    <view class="chart-card">
+      <view class="card-header">
+        <view class="card-title-group">
+          <view class="icon-box type-target">
+            <text>🎯</text>
+          </view>
+          <view class="text-info">
+            <text class="chart-label">参加活动</text>
+            <text class="chart-desc">每日活动参与记录</text>
+          </view>
+        </view>
+      </view>
+      <view class="canvas-container">
+        <canvas canvas-id="activityChart" class="chart-canvas"></canvas>
+      </view>
+    </view>
+
+    <!-- 底部垫高 -->
+    <view style="height: 40px;"></view>
+
+  </view>
+</view>

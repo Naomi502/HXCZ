@@ -1,0 +1,678 @@
+// 深色模式样式覆盖
+.dark-mode {
+  --bg-color: #141414;
+  --card-bg: #1f1f1f;
+  --text-color: #d0d0d0;
+  --secondary-text: #909399;
+  --border-color: #333333;
+  --hover-bg: #2a2a2a;
+  
+  color: var(--text-color);
+  background-color: var(--bg-color);
+
+  .app-main {
+    background-color: var(--bg-color);
+  }
+
+  // 导航栏
+  .navbar {
+    background: var(--card-bg) !important;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: none !important;
+
+    .right-menu .right-menu-item {
+      color: var(--text-color) !important; // 强制文字颜色
+      
+      &:hover {
+        background: var(--hover-bg);
+      }
+      
+      // 修复 svg 图标颜色
+      .svg-icon {
+          fill: var(--text-color) !important;
+          color: var(--text-color) !important;
+      }
+      
+      // 修复 element 图标颜色 (如 el-icon-caret-bottom)
+      i {
+          color: var(--text-color) !important;
+      }
+    }
+    
+    .hamburger-container {
+      &:hover {
+        background: var(--hover-bg);
+      }
+      svg {
+        fill: var(--text-color) !important; // 强制汉堡菜单图标颜色
+        color: var(--text-color) !important;
+      }
+    }
+    
+    .breadcrumb-container .no-redirect {
+        color: #97a8be;
+    }
+    
+    // 修复顶栏面包屑非跳转链接的文字颜色
+    .el-breadcrumb__item {
+        .el-breadcrumb__inner {
+            color: var(--secondary-text) !important;
+            
+            &.is-link, a {
+                font-weight: normal;
+                color: var(--secondary-text) !important;
+                
+                &:hover {
+                    color: #409eff !important;
+                }
+            }
+        }
+        
+        &:last-child .el-breadcrumb__inner {
+            color: var(--text-color) !important; // 最后一级（当前页）亮色显示
+        }
+    }
+  }
+
+  // TagsView 标签页
+  .tags-view-container {
+    background: var(--card-bg) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    
+    .tags-view-wrapper {
+      .tags-view-item {
+        background: var(--bg-color) !important;
+        border-color: var(--border-color) !important;
+        color: var(--text-color) !important;
+        
+        &.active {
+          background-color: #409eff !important;
+          color: #fff !important;
+          border-color: #409eff !important;
+        }
+      }
+    }
+  }
+
+  // 侧边栏
+  .sidebar-container {
+    background-color: var(--card-bg) !important;
+    box-shadow: 2px 0 6px rgba(0, 0, 0, 0.35); 
+    
+    // Logo
+    .sidebar-logo-container {
+        background-color: var(--card-bg) !important;
+        border-bottom: 1px solid var(--border-color); 
+        
+        .sidebar-title {
+            color: var(--text-color) !important;
+        }
+    }
+
+    // 菜单
+    .el-menu {
+      background-color: var(--card-bg) !important;
+      border-right: none;
+    }
+    
+    .el-scrollbar {
+        background-color: var(--card-bg) !important;
+    }
+    
+    // 菜单项
+    .el-menu-item, .el-submenu__title {
+        color: var(--text-color) !important;
+        
+        &:hover {
+            background-color: var(--hover-bg) !important;
+        }
+        
+        i {
+            color: var(--text-color) !important;
+        }
+    }
+
+    // 修复 Element UI submenu title hover 样式不生效问题
+    .el-submenu__title:hover {
+        background-color: var(--hover-bg) !important;
+    }
+    
+    // 激活状态（一级菜单或无子菜单的项）
+    .el-menu-item.is-active {
+        color: #409eff !important;
+        background-color: #141414 !important;
+    }
+    
+    // 关键修复：子菜单展开区域的背景色
+    .el-submenu .el-menu {
+        background-color: #141414 !important; // 强制子菜单容器背景为深色
+    }
+
+    // 覆盖 sidebar.scss 中针对 theme-dark 的特定高优先级规则
+    .theme-dark .nest-menu .el-submenu>.el-submenu__title,
+    .theme-dark .el-submenu .el-menu-item {
+      background-color: #141414 !important;
+
+      &:hover {
+        background-color: var(--hover-bg) !important;
+      }
+      
+      &.is-active {
+          background-color: #000000 !important;
+          color: #409eff !important;
+      }
+    }
+
+    // 子菜单项背景
+    .el-submenu .el-menu-item {
+        background-color: #141414 !important;
+        
+        &:hover {
+            background-color: var(--hover-bg) !important;
+        }
+        
+        // 子菜单项被激活时
+        &.is-active {
+             background-color: #000000 !important; // 激活项背景更深一点，区分
+             color: #409eff !important;
+        }
+    }
+    
+    // 专门适配 theme-night (深色模式下的侧边栏类名)
+    .theme-night {
+        .el-menu {
+             background-color: #1f1f1f !important;
+        }
+        
+        .el-submenu .el-menu-item {
+            background-color: #141414 !important;
+        }
+    }
+    
+    // View Transitions API 样式适配
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation: none;
+      mix-blend-mode: normal;
+    }
+    
+    // 始终让新视图在上层，以便应用 clip-path 动画
+    ::view-transition-new(root) {
+      z-index: 9999;
+    }
+    
+    ::view-transition-old(root) {
+      z-index: 1;
+    }
+  }
+  
+  // 主内容区域背景
+  .app-main {
+      background-color: var(--bg-color);
+      min-height: 100vh;
+  }
+  
+  // 首页背景覆盖
+  .home {
+      background-color: var(--bg-color) !important;
+  }
+
+  // Element UI 卡片
+  .el-card {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    color: var(--text-color);
+
+    &__header {
+      border-bottom-color: var(--border-color);
+      color: var(--text-color);
+    }
+    
+    &__body {
+      color: var(--text-color);
+    }
+  }
+
+  // Element UI 表格
+  .el-table {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    
+    // 修复表格内 input 边框颜色
+    .el-input__inner {
+        border-color: var(--border-color) !important;
+        background-color: var(--hover-bg) !important;
+        color: var(--text-color) !important;
+    }
+
+    // 加载中遮罩层
+    .el-loading-mask {
+        background-color: rgba(0, 0, 0, 0.7) !important; // 深色半透明遮罩
+    }
+    
+    // 加载图标和文字
+    .el-loading-spinner {
+        .path {
+            stroke: #409eff; // 保持加载圈颜色
+        }
+        .el-loading-text {
+            color: #409eff;
+        }
+    }
+    
+    th, tr {
+      background-color: var(--card-bg) !important; // 强制表头和行背景
+      color: var(--text-color);
+    }
+    
+    thead {
+        color: var(--text-color);
+        th.is-leaf {
+            background-color: #1f1f1f !important; // 单独设置表头背景，比内容稍深一点或一致
+            border-bottom-color: var(--border-color);
+        }
+    }
+    
+    td, th.is-leaf {
+      border-bottom-color: var(--border-color);
+    }
+    
+    &--border, &--group {
+      border-color: var(--border-color);
+    }
+    
+    &::before, &::after {
+      background-color: var(--border-color);
+    }
+    
+    // 鼠标悬停行
+    &--enable-row-hover .el-table__body tr:hover > td {
+      background-color: var(--hover-bg) !important;
+    }
+
+    // 斑马纹
+    &--striped .el-table__body tr.el-table__row--striped td {
+      background-color: #2a2a2a;
+    }
+    
+    .el-table__fixed-right::before, .el-table__fixed::before {
+        background-color: var(--border-color);
+    }
+  }
+  
+  // 底部版权
+  .copyright {
+      background-color: var(--card-bg) !important;
+      border-top: 1px solid var(--border-color) !important;
+      color: var(--secondary-text) !important;
+  }
+  
+  // 积分列表文字颜色优化
+  .point-item {
+      border-bottom-color: var(--border-color) !important;
+      
+      .point-left {
+          .point-user {
+              color: var(--text-color) !important;
+          }
+          .point-remark {
+              color: var(--secondary-text) !important;
+          }
+      }
+  }
+
+  // 按钮
+  .el-button--default {
+    background: var(--card-bg) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-color) !important;
+    
+    &:hover, &:focus {
+      color: #409eff !important;
+      border-color: #c6e2ff !important;
+      background-color: #293038 !important;
+    }
+  }
+  
+  // 主要按钮 (Primary)
+  .el-button--primary {
+      // 保持原有蓝色，但微调边框
+      border-color: #409eff;
+      
+      // 朴素按钮 (Plain)
+      &.is-plain {
+          background: #1f2d3d !important; // 深色背景
+          border-color: #409eff !important;
+          color: #409eff !important;
+          
+          &:hover, &:focus {
+              background: #409eff !important;
+              border-color: #409eff !important;
+              color: #fff !important;
+          }
+      }
+  }
+  
+  // 成功按钮 (Success)
+  .el-button--success {
+      &.is-plain {
+          background: #1e3626 !important;
+          border-color: #67c23a !important;
+          color: #67c23a !important;
+          
+          &:hover, &:focus {
+              background: #67c23a !important;
+              color: #fff !important;
+          }
+      }
+  }
+  
+  // 警告按钮 (Warning)
+  .el-button--warning {
+      &.is-plain {
+          background: #382e1e !important;
+          border-color: #e6a23c !important;
+          color: #e6a23c !important;
+          
+          &:hover, &:focus {
+              background: #e6a23c !important;
+              color: #fff !important;
+          }
+      }
+  }
+  
+  // 危险按钮 (Danger)
+  .el-button--danger {
+      &.is-plain {
+          background: #361e1e !important;
+          border-color: #f56c6c !important;
+          color: #f56c6c !important;
+          
+          &:hover, &:focus {
+              background: #f56c6c !important;
+              color: #fff !important;
+          }
+      }
+  }
+  
+  .el-button--text {
+      color: #409eff;
+      &:hover { color: #66b1ff; }
+  }
+  
+  // 输入框
+  .el-input__inner, .el-textarea__inner {
+    background-color: var(--hover-bg);
+    border-color: var(--border-color);
+    color: var(--text-color);
+    
+    &:hover {
+      border-color: #666;
+    }
+    
+    &:focus {
+      border-color: #409eff;
+    }
+  }
+
+  // 弹窗 Dialog / Drawer / MessageBox
+  .el-dialog, .el-drawer__body, .el-message-box, .el-drawer__header {
+    background-color: var(--card-bg) !important; // 强制弹窗背景色
+    border-color: var(--border-color); 
+    
+    &__title {
+      color: var(--text-color) !important;
+    }
+    
+    &__header {
+      background-color: var(--card-bg) !important; // 修复 header 背景
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-color) !important;
+      
+      .el-dialog__title, .el-drawer__title {
+          color: var(--text-color) !important;
+      }
+    }
+    
+    &__footer {
+      background-color: var(--card-bg) !important; // 修复 footer 背景
+      border-top: 1px solid var(--border-color);
+    }
+    
+    // 弹窗内的内容文字颜色
+    &__body, &__content {
+        color: var(--text-color) !important;
+    }
+    
+    // 关闭按钮
+    &__headerbtn .el-dialog__close, .el-message-box__close, .el-drawer__close-btn {
+        color: var(--secondary-text) !important;
+        &:hover {
+            color: #409eff !important;
+        }
+    }
+  }
+  
+  // 针对 append-to-body 的抽屉/弹窗，需要更强的选择器覆盖
+  // 因为 append-to-body 会将元素直接挂载到 body 下，有时会脱离 .dark-mode 的作用域
+  // 但我们已将 .dark-mode 加在了 html/body 上，所以通常有效。
+  // 这里的关键是 el-drawer__body 默认有白色背景，需要强制覆盖。
+  .el-drawer {
+      // 抽屉外层容器
+      &__header {
+          color: var(--text-color) !important;
+          border-bottom: 1px solid var(--border-color);
+          margin-bottom: 0;
+          padding-bottom: 20px;
+          
+          span {
+              color: var(--text-color) !important;
+          }
+      }
+      
+      &__body {
+          background-color: var(--card-bg) !important;
+          color: var(--text-color) !important;
+      }
+  }
+  
+  // 针对 Collapse 折叠面板（常见于操作说明）
+  .el-collapse {
+      border-color: var(--border-color);
+      
+      &-item__header {
+          background-color: var(--card-bg) !important;
+          color: var(--text-color) !important;
+          border-bottom-color: var(--border-color);
+      }
+      
+      &-item__wrap {
+          background-color: var(--card-bg) !important;
+          border-bottom-color: var(--border-color);
+      }
+      
+      &-item__content {
+          color: var(--secondary-text) !important;
+      }
+  }
+  
+  // 分页
+  .el-pagination {
+    background-color: var(--card-bg) !important;
+    color: var(--text-color) !important;
+    
+    .btn-prev, .btn-next {
+      background-color: var(--card-bg) !important;
+      color: var(--text-color) !important;
+      border: 1px solid var(--border-color); // 增加边框
+      
+      &:disabled {
+          background-color: var(--hover-bg) !important;
+          color: #666 !important;
+      }
+    }
+    
+    button:disabled {
+      background-color: var(--card-bg) !important;
+      color: #666 !important;
+    }
+    
+    .el-pager li {
+      background-color: var(--card-bg) !important;
+      color: var(--text-color) !important;
+      border: 1px solid var(--border-color); // 增加边框
+      margin: 0 4px; // 增加间距
+      
+      &.active {
+        color: #409eff !important;
+        border-color: #409eff !important;
+      }
+      
+      &:hover {
+          color: #409eff !important;
+      }
+    }
+    
+    // 页码跳转输入框
+    .el-input__inner {
+        background-color: var(--card-bg) !important;
+        border-color: var(--border-color) !important;
+        color: var(--text-color) !important;
+    }
+  }
+  
+  // 图片占位符
+  .image-slot {
+      background: var(--hover-bg) !important;
+      color: var(--secondary-text) !important;
+      
+      i {
+          color: var(--secondary-text) !important;
+      }
+  }
+
+  // 强制覆盖内联样式的浅色背景 (针对之前手动写的 style="background: #f5f7fa")
+  div[style*="background: #f5f7fa"], 
+  div[style*="background: rgb(245, 247, 250)"] {
+      background: var(--hover-bg) !important;
+      color: var(--secondary-text) !important;
+      
+      i {
+          color: var(--secondary-text) !important;
+      }
+      
+      // 修复文字颜色
+      span {
+          color: var(--secondary-text) !important;
+      }
+  }
+  
+  // 修复之前硬编码的浅色背景占位图
+  .el-image {
+      .el-image__error, .image-slot {
+          background: var(--hover-bg) !important;
+      }
+  }
+  
+  // 分页栏容器
+  .pagination-container {
+      background: var(--card-bg) !important;
+      padding: 10px 20px !important;
+  }
+
+  // 复选框
+  .el-checkbox__inner {
+      background-color: var(--card-bg) !important;
+      border-color: var(--border-color) !important;
+      
+      &:hover {
+          border-color: #409eff !important;
+      }
+  }
+  
+  .el-checkbox__input.is-checked .el-checkbox__inner, 
+  .el-checkbox__input.is-indeterminate .el-checkbox__inner {
+      background-color: #409eff !important;
+      border-color: #409eff !important;
+  }
+  
+  // 标签 Tag
+  .el-tag {
+      background-color: #1f2d3d !important;
+      border-color: #333 !important;
+      color: #b3c0d1 !important;
+      
+      &--success {
+          background-color: #1e3626 !important;
+          border-color: #25422d !important;
+          color: #67c23a !important;
+      }
+      &--warning {
+          background-color: #382e1e !important;
+          border-color: #463823 !important;
+          color: #e6a23c !important;
+      }
+      &--danger {
+          background-color: #361e1e !important;
+          border-color: #422424 !important;
+          color: #f56c6c !important;
+      }
+      &--info {
+          background-color: #2b2f3a !important;
+          border-color: #363b49 !important;
+          color: #909399 !important;
+      }
+  }
+  
+  // Tabs
+  .el-tabs__item {
+      color: var(--text-color);
+      &.is-active {
+          color: #409eff;
+      }
+      &:hover {
+          color: #409eff;
+      }
+  }
+  .el-tabs__nav-wrap::after {
+      background-color: var(--border-color);
+  }
+
+  // 首页特定的覆盖
+  .welcome-container {
+    background: var(--card-bg) !important;
+    box-shadow: none;
+    border: 1px solid var(--border-color);
+    
+    .welcome-title { color: var(--text-color) !important; }
+    .welcome-desc { color: var(--secondary-text) !important; }
+    
+    .help-btn {
+        background: #2b2f3a !important; // 深色背景
+        color: #bfcbd9 !important;
+        
+        &:hover {
+            background: #1f2d3d !important;
+            color: #409eff !important;
+        }
+    }
+  }
+
+  .dashboard-stat-card {
+    // 保持原来的渐变色，但加个边框或阴影调整
+    &.small-card {
+        border: 1px solid var(--border-color);
+    }
+  }
+  
+  .box-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    box-shadow: none;
+  }
+  
+  // 树洞时间轴
+  .el-timeline-item__content {
+      color: var(--text-color);
+  }
+}

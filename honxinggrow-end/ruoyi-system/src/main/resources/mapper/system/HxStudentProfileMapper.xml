@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.HxStudentProfileMapper">
+
+    <resultMap id="HxStudentProfileResult" type="com.ruoyi.system.domain.HxStudentProfile">
+        <id     column="profile_id"               property="profileId"/>
+        <result column="user_id"                  property="userId"/>
+        <result column="user_name"                property="userName"/>
+        <result column="points_total"             property="pointsTotal"/>
+        <result column="last_story_point_time"    property="lastStoryPointTime"/>
+        <result column="last_activity_point_time" property="lastActivityPointTime"/>
+        <result column="create_by"                property="createBy"/>
+        <result column="create_time"              property="createTime"/>
+        <result column="update_by"                property="updateBy"/>
+        <result column="update_time"              property="updateTime"/>
+        <result column="remark"                   property="remark"/>
+    </resultMap>
+
+    <sql id="selectProfileColumns">
+        select profile_id, user_id, user_name, points_total,
+               last_story_point_time, last_activity_point_time,
+               create_by, create_time, update_by, update_time, remark
+        from hx_student_profile
+    </sql>
+
+    <select id="selectById" parameterType="Long" resultMap="HxStudentProfileResult">
+        <include refid="selectProfileColumns"/>
+        where profile_id = #{profileId}
+    </select>
+
+    <select id="selectByUserId" parameterType="Long" resultMap="HxStudentProfileResult">
+        select p.profile_id, p.user_id, p.user_name, p.points_total,
+               p.last_story_point_time, p.last_activity_point_time,
+               p.create_by, p.create_time, p.update_by, p.update_time, p.remark,
+               (select count(1) from hx_story_like l where l.user_id = p.user_id) as story_count,
+               (select count(1) from hx_activity_participant ap where ap.user_id = p.user_id) as activity_count
+        from hx_student_profile p
+        where p.user_id = #{userId}
+    </select>
+
+    <select id="selectHxStudentProfileList" parameterType="com.ruoyi.system.domain.HxStudentProfile" resultMap="HxStudentProfileResult">
+        <include refid="selectProfileColumns"/>
+        <where>
+            <if test="userName != null and userName != ''">
+                and user_name like concat('%', #{userName}, '%')
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+        </where>
+        order by points_total desc, update_time desc
+    </select>
+
+    <select id="selectStudentList" parameterType="com.ruoyi.system.domain.HxStudentProfile" resultType="java.util.Map">
+        SELECT
+            u.user_id as userId,
+            u.dept_id as deptId,
+            u.user_name as userName,
+            u.nick_name as nickName,
+            u.email,
+            u.phonenumber,
+            u.sex,
+            u.avatar,
+            u.status,
+            u.create_time as createTime,
+            d.dept_name as deptName,
+            IFNULL(p.points_total, 0) as pointsTotal,
+            CASE WHEN w.openid IS NOT NULL THEN 1 ELSE 0 END as wechatBound
+        FROM sys_user u
+        LEFT JOIN sys_dept d ON u.dept_id = d.dept_id
+        LEFT JOIN hx_student_profile p ON u.user_id = p.user_id
+        LEFT JOIN hx_user_wechat w ON u.user_id = w.user_id
+        LEFT JOIN sys_user_role ur ON u.user_id = ur.user_id
+        LEFT JOIN sys_role r ON ur.role_id = r.role_id
+        WHERE u.del_flag = '0'
+        <if test="roleKey != null and roleKey != ''">
+            AND r.role_key = #{roleKey}
+        </if>
+        <if test="roleKey == null or roleKey == ''">
+            AND r.role_key = 'student'
+        </if>
+        <if test="userName != null and userName != ''">
+            AND (u.user_name like concat('%', #{userName}, '%') OR u.nick_name like concat('%', #{userName}, '%'))
+        </if>
+        <if test="phonenumber != null and phonenumber != ''">
+            AND u.phonenumber like concat('%', #{phonenumber}, '%')
+        </if>
+        <if test="status != null and status != ''">
+            AND u.status = #{status}
+        </if>
+        <if test="deptName != null and deptName != ''">
+            AND (
+                d.dept_name like concat('%', #{deptName}, '%')
+                OR EXISTS (
+                    SELECT 1 FROM sys_dept parent
+                    WHERE parent.dept_name like concat('%', #{deptName}, '%')
+                    AND find_in_set(parent.dept_id, d.ancestors)
+                )
+            )
+        </if>
+        GROUP BY u.user_id
+        ORDER BY u.create_time DESC
+    </select>
+
+    <insert id="insertHxStudentProfile" parameterType="com.ruoyi.system.domain.HxStudentProfile" useGeneratedKeys="true" keyProperty="profileId">
+        insert into hx_student_profile(
+            user_id, user_name, points_total, last_story_point_time, last_activity_point_time,
+            create_by, create_time, update_by, update_time, remark
+        ) values (
+            #{userId}, #{userName}, #{pointsTotal}, #{lastStoryPointTime}, #{lastActivityPointTime},
+            #{createBy}, #{createTime}, #{updateBy}, #{updateTime}, #{remark}
+        )
+    </insert>
+
+    <update id="updateHxStudentProfile" parameterType="com.ruoyi.system.domain.HxStudentProfile">
+        update hx_student_profile
+        <set>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="userName != null">user_name = #{userName},</if>
+            <if test="pointsTotal != null">points_total = #{pointsTotal},</if>
+            <if test="lastStoryPointTime != null">last_story_point_time = #{lastStoryPointTime},</if>
+            <if test="lastActivityPointTime != null">last_activity_point_time = #{lastActivityPointTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            update_time = #{updateTime},
+            <if test="remark != null">remark = #{remark},</if>
+        </set>
+        where profile_id = #{profileId}
+    </update>
+
+    <delete id="deleteById" parameterType="Long">
+        delete from hx_student_profile where profile_id = #{profileId}
+    </delete>
+
+    <delete id="deleteByIds" parameterType="Long">
+        delete from hx_student_profile where profile_id in
+        <foreach collection="array" item="profileId" open="(" separator="," close=")">
+            #{profileId}
+        </foreach>
+    </delete>
+
+    <insert id="addPoints">
+        insert into hx_student_profile(
+            user_id, user_name, points_total, last_story_point_time, last_activity_point_time,
+            create_time, update_time
+        ) values (
+            #{userId}, #{userName}, #{points},
+            #{storyPointTime}, #{activityPointTime},
+            sysdate(), sysdate()
+        )
+        on duplicate key update
+            user_name = values(user_name),
+            points_total = points_total + #{points},
+            last_story_point_time = ifnull(#{storyPointTime}, last_story_point_time),
+            last_activity_point_time = ifnull(#{activityPointTime}, last_activity_point_time),
+            update_time = sysdate()
+    </insert>
+</mapper>

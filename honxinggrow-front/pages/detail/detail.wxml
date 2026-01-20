@@ -1,0 +1,124 @@
+<view class="page" animation="{{pageAnim}}">
+  <!-- 星云背景 -->
+  <view class="nebula-bg">
+    <view class="blob blob-1"></view>
+    <view class="blob blob-2"></view>
+  </view>
+
+  <!-- 返回按钮 -->
+  <view class="back-btn" style="top: {{capsuleTop}}px;" bindtap="handleBack">
+    <text class="back-arrow">‹</text>
+  </view>
+
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading-overlay">
+    <view class="spinner-container">
+      <view class="loading-spinner"></view>
+    </view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <view wx:else class="detail-container">
+    
+    <!-- 头部信息区 (大标题风格) -->
+    <view class="header-area">
+      <view class="header-content">
+        <text class="main-title">{{detailData.title}}</text>
+        <view class="meta-row">
+          <view class="meta-tag">
+            <text class="icon">📅</text>
+            <text>{{detailData.publishTime || '刚刚'}}</text>
+          </view>
+          <view class="meta-divider"></view>
+          <view class="meta-tag">
+            <text class="icon">👁</text>
+            <text>{{detailData.viewCount || 0}} 阅读</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 摘要卡片 (玻璃态) -->
+    <view wx:if="{{detailData.summary}}" class="summary-glass">
+      <view class="quote-icon left">“</view>
+      <text class="summary-text">{{detailData.summary}}</text>
+      <view class="quote-icon right">”</view>
+    </view>
+
+    <!-- 正文内容卡片 -->
+    <view class="content-card">
+      <view class="richtext-wrapper">
+        <block wx:for="{{contentBlocks}}" wx:key="index">
+          <image
+            wx:if="{{item.type === 'image'}}"
+            class="article-image"
+            src="{{item.src}}"
+            mode="widthFix"
+            bindtap="previewImage"
+            data-current="{{item.src}}"
+            lazy-load
+          ></image>
+          <rich-text
+            wx:else
+            class="article-text"
+            nodes="{{item.content}}"
+          ></rich-text>
+        </block>
+        
+        <!-- 兜底显示 -->
+        <rich-text
+          wx:if="{{!contentBlocks.length}}"
+          class="article-text"
+          nodes="{{detailData.content || detailData.description}}"
+        ></rich-text>
+      </view>
+
+      <!-- 底部互动区 -->
+      <view class="interaction-area">
+        <view class="divider-line">
+          <text>End</text>
+        </view>
+        
+        <button 
+          class="like-fab {{hasLiked ? 'active' : ''}}" 
+          bindtap="handleLike"
+          disabled="{{hasLiked}}"
+          hover-class="fab-hover"
+        >
+          <text class="fab-icon">{{hasLiked ? '❤️' : '🤍'}}</text>
+          <text class="fab-text">{{hasLiked ? '已点赞' : '点赞'}}</text>
+          <view class="fab-count" wx:if="{{detailData.likeCount > 0}}">{{detailData.likeCount}}</view>
+        </button>
+      </view>
+    </view>
+
+    <!-- 相关推荐 -->
+    <view wx:if="{{recommendedStories.length}}" class="recommend-section">
+      <view class="section-title">
+        <text class="title-text">更多精彩</text>
+        <text class="title-sub">Keep Reading</text>
+      </view>
+      
+      <scroll-view class="recommend-scroll" scroll-x enable-flex>
+        <view 
+          class="recommend-card" 
+          wx:for="{{recommendedStories}}" 
+          wx:key="storyId" 
+          bindtap="viewRelatedStory" 
+          data-id="{{item.storyId}}"
+        >
+          <image class="rec-cover" src="{{item.coverUrl || '/images/default_cover.png'}}" mode="aspectFill"></image>
+          <view class="rec-info">
+            <view class="rec-title">{{item.title}}</view>
+            <view class="rec-meta">{{item.viewCount || 0}} 阅读</view>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+    
+    <!-- 底部安全区 -->
+    <view style="height: 40px;"></view>
+  </view>
+</view>
+
+

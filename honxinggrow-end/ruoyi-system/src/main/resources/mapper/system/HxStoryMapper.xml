@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.HxStoryMapper">
+
+    <resultMap id="HxStoryResult" type="com.ruoyi.system.domain.HxStory">
+        <id     column="story_id"            property="storyId"/>
+        <result column="title"               property="title"/>
+        <result column="summary"             property="summary"/>
+        <result column="cover_url"           property="coverUrl"/>
+        <result column="content"             property="content"/>
+        <result column="status"              property="status"/>
+        <result column="sort"                property="sort"/>
+        <result column="publish_time"        property="publishTime"/>
+        <result column="publish_user_id"     property="publishUserId"/>
+        <result column="publish_user_name"   property="publishUserName"/>
+        <result column="view_count"          property="viewCount"/>
+        <result column="like_count"          property="likeCount"/>
+        <result column="del_flag"            property="delFlag"/>
+        <result column="create_by"           property="createBy"/>
+        <result column="create_time"         property="createTime"/>
+        <result column="update_by"           property="updateBy"/>
+        <result column="update_time"         property="updateTime"/>
+        <result column="remark"              property="remark"/>
+    </resultMap>
+
+    <sql id="selectStoryColumns">
+        select story_id, title, summary, cover_url, content, status, sort, publish_time,
+               publish_user_id, publish_user_name, view_count, like_count, del_flag,
+               create_by, create_time, update_by, update_time, remark
+        from hx_story
+    </sql>
+
+    <select id="selectHxStoryById" parameterType="Long" resultMap="HxStoryResult">
+        <include refid="selectStoryColumns"/>
+        where story_id = #{storyId} and del_flag = '0'
+    </select>
+
+    <select id="selectHxStoryList" parameterType="com.ruoyi.system.domain.HxStory" resultMap="HxStoryResult">
+        <include refid="selectStoryColumns"/>
+        <where>
+            del_flag = '0'
+            <if test="title != null and title != ''">
+                and title like concat('%', #{title}, '%')
+            </if>
+            <if test="status != null and status != ''">
+                and status = #{status}
+            </if>
+            <if test="createBy != null and createBy != ''">
+                and create_by like concat('%', #{createBy}, '%')
+            </if>
+        </where>
+        order by sort asc, publish_time desc, create_time desc
+    </select>
+
+    <select id="selectPublishedStories" resultMap="HxStoryResult">
+        <include refid="selectStoryColumns"/>
+        where del_flag = '0' and status = '1'
+        order by sort asc, publish_time desc, create_time desc
+    </select>
+
+    <select id="selectLikedStoriesByUserId" parameterType="Long" resultMap="HxStoryResult">
+        select s.story_id, s.title, s.summary, s.cover_url, s.content, s.status, s.sort, s.publish_time,
+               s.publish_user_id, s.publish_user_name, s.view_count, s.like_count, s.del_flag,
+               s.create_by, s.create_time, s.update_by, s.update_time, s.remark
+        from hx_story s
+        inner join hx_story_like l on s.story_id = l.story_id
+        where l.user_id = #{userId} and s.del_flag = '0'
+        order by l.create_time desc
+    </select>
+
+    <insert id="insertHxStory" parameterType="com.ruoyi.system.domain.HxStory" useGeneratedKeys="true" keyProperty="storyId">
+        insert into hx_story(
+            title, summary, cover_url, content, status, sort, publish_time,
+            publish_user_id, publish_user_name, view_count, like_count, del_flag,
+            create_by, create_time, update_by, update_time, remark
+        ) values (
+            #{title}, #{summary}, #{coverUrl}, #{content}, #{status}, #{sort}, #{publishTime},
+            #{publishUserId}, #{publishUserName}, #{viewCount}, #{likeCount}, #{delFlag},
+            #{createBy}, #{createTime}, #{updateBy}, #{updateTime}, #{remark}
+        )
+    </insert>
+
+    <update id="updateHxStory" parameterType="com.ruoyi.system.domain.HxStory">
+        update hx_story
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="summary != null">summary = #{summary},</if>
+            <if test="coverUrl != null">cover_url = #{coverUrl},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="publishTime != null">publish_time = #{publishTime},</if>
+            <if test="publishUserId != null">publish_user_id = #{publishUserId},</if>
+            <if test="publishUserName != null">publish_user_name = #{publishUserName},</if>
+            <if test="viewCount != null">view_count = #{viewCount},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            update_time = #{updateTime},
+            <if test="remark != null">remark = #{remark},</if>
+        </set>
+        where story_id = #{storyId}
+    </update>
+
+    <update id="increaseViewCount" parameterType="Long">
+        update hx_story
+        set view_count = ifnull(view_count, 0) + 1
+        where story_id = #{storyId} and del_flag = '0'
+    </update>
+
+    <update id="increaseLikeCount" parameterType="Long">
+        update hx_story
+        set like_count = ifnull(like_count, 0) + 1
+        where story_id = #{storyId} and del_flag = '0'
+    </update>
+
+    <delete id="deleteHxStoryById" parameterType="Long">
+        update hx_story set del_flag = '2', update_time = sysdate() where story_id = #{storyId}
+    </delete>
+
+    <delete id="deleteHxStoryByIds" parameterType="Long">
+        update hx_story set del_flag = '2', update_time = sysdate()
+        where story_id in
+        <foreach collection="array" item="storyId" open="(" separator="," close=")">
+            #{storyId}
+        </foreach>
+    </delete>
+</mapper>

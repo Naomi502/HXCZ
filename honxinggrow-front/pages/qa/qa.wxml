@@ -1,0 +1,129 @@
+<!-- AI Chat Page -->
+<view class="page {{runAnim ? 'animate-entry' : 'anim-reset'}}">
+  <!-- 顶部背景 -->
+  <view class="nebula-bg">
+    <view class="blob blob-1"></view>
+    <view class="blob blob-2"></view>
+  </view>
+
+  <!-- 沉浸式导航栏 -->
+  <view class="header-bar" style="padding-top: {{capsuleTop}}px; height: {{navHeight}}px;">
+    <!-- 仅在非 TabBar 页面显示返回按钮，如果是 Tab 页可以隐藏 -->
+    <view class="header-content" style="height: {{capsuleHeight}}px;">
+        <view class="title-row">
+            <text class="page-title">意小芯</text>
+            <view class="speaker-icon" bindtap="toggleMute">
+                <text>{{isMuted ? '🔇' : '🔊'}}</text>
+            </view>
+        </view>
+        <view class="subtitle-row">
+            <text class="page-disclaimer">由 {{modelName || 'AI'}} 提供服务</text>
+            <!-- 增加声纹动画 -->
+            <view class="voice-wave" wx:if="{{isSpeaking}}">
+                <view class="bar bar1"></view>
+                <view class="bar bar2"></view>
+                <view class="bar bar3"></view>
+                <view class="bar bar4"></view>
+                <view class="bar bar5"></view>
+            </view>
+        </view>
+    </view>
+  </view>
+
+  <!-- 数字人悬浮窗 (位于导航栏下方) -->
+  <view class="digital-human-container" style="top: {{navHeight}}px;">
+      <!-- 极简光晕背景 -->
+      <view class="tech-glow-bg"></view>
+      
+      <!-- 底部全息投影底座与波纹 -->
+      <view class="hologram-base">
+          <view class="energy-ripple"></view>
+      </view>
+      
+      <!-- 悬浮粒子 -->
+      <view class="particles-container">
+          <view class="particle p1"></view>
+          <view class="particle p2"></view>
+          <view class="particle p3"></view>
+          <view class="particle p4"></view>
+      </view>
+      
+      <!-- 静态图片 -->
+      <image 
+        class="digital-human-img"
+        src="/images/speak.png" 
+        mode="aspectFit"
+      ></image>
+      <!-- 前景覆盖层 -->
+      <view class="tech-scan-line"></view>
+  </view>
+  
+  <!-- 内容渐隐遮罩 (覆盖整个顶部，作为数字人的背景板) -->
+  <view class="content-gradient-mask" style="height: {{navHeight + 340}}px;"></view>
+
+  <view class="chat-container">
+    <scroll-view scroll-y class="chat-list" scroll-into-view="{{scrollIntoView}}" scroll-with-animation>
+      <!-- 顶部占位块，避让数字人 -->
+      <view style="height: {{navHeight + 280}}px; width: 100%; flex-shrink: 0;"></view>
+      
+      <!-- Welcome Message -->
+      <view class="message left" id="msg-0">
+        <!-- 移除 AI 头像 -->
+        <view class="content">
+          <text user-select>你好！我是e小芯。有什么可以帮你的吗？\n你可以问我关于奖学金、活动积分、请假流程等问题。\n目前因为域名业务问题，暂时不解决朗读问题</text>
+        </view>
+      </view>
+
+      <!-- Chat History -->
+      <block wx:for="{{msgList}}" wx:key="id">
+        <view class="message {{item.role === 'user' ? 'right' : 'left'}}" id="msg-{{item.id}}">
+          <block wx:if="{{item.role === 'user'}}">
+             <!-- 用户头像：优先显示本地缓存头像，其次微信头像，最后文字头像 -->
+             <view class="avatar-container" style="margin-left: 20rpx;">
+                <image wx:if="{{userInfo.localAvatar || userInfo.avatarUrl}}" class="avatar" src="{{userInfo.localAvatar || userInfo.avatarUrl}}" mode="aspectFill"></image>
+                <view wx:else class="avatar-circle-small">
+                    <text>{{userInfo.nickName[0] || userInfo.userName[0] || '我'}}</text>
+                </view>
+             </view>
+          </block>
+          <block wx:else>
+             <!-- 移除 AI 头像 -->
+          </block>
+
+          <view class="content">
+            <text user-select>{{item.content}}</text>
+          </view>
+        </view>
+      </block>
+
+      <!-- Loading Indicator -->
+      <view class="message left" wx:if="{{loading}}">
+        <!-- 移除 AI 头像 -->
+        <view class="content loading">
+          <view class="dot"></view><view class="dot"></view><view class="dot"></view>
+        </view>
+      </view>
+      
+      <!-- Anchor for scroll to bottom -->
+      <view id="bottom-anchor" style="height: 240rpx;"></view>
+    </scroll-view>
+  </view>
+
+  <!-- Input Area (Fixed Position) -->
+  <view class="input-area-wrapper {{runAnim ? 'slide-up-anim' : ''}}">
+    <view class="input-area">
+      <view class="input-box-container">
+        <input class="input-box" 
+               value="{{inputValue}}" 
+               bindinput="onInput" 
+               bindconfirm="onSend" 
+               confirm-type="send"
+               placeholder="请输入你的问题..." 
+               placeholder-class="input-placeholder"/>
+      </view>
+      <button class="send-btn" bindtap="onSend" disabled="{{!inputValue || loading}}">
+        <image class="send-icon" src="/images/send-plane.png" mode="aspectFit" />
+      </button>
+    </view>
+  </view>
+</view>

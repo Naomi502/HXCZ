@@ -1,0 +1,68 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/activity/activity",
+    "pages/myActivities/myActivities",
+    "pages/mine/mine",
+    "pages/accountSettings/accountSettings",
+    "pages/pointsDetail/pointsDetail",
+    "pages/growthHistory/growthHistory",
+    "pages/detail/detail",
+    "pages/activityDetail/activityDetail",
+    "pages/qa/qa",
+    "pages/treehole/index",
+    "pages/treehole/send",
+    "pages/treehole/history",
+    "pages/messageCenter/messageCenter"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "红芯成长",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#faf8f5",
+    "backgroundColorTop": "#faf8f5",
+    "backgroundColorBottom": "#faf8f5"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#999",
+    "selectedColor": "#ff6700",
+    "backgroundColor": "#fff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "故事",
+        "iconPath": "images/icon_activity.png",
+        "selectedIconPath": "images/icon_activity_selected.png",
+        "textStyle": {}
+      },
+      
+      {
+        "pagePath": "pages/activity/activity",
+        "text": "活动",
+        "iconPath": "images/icon_around.png",
+        "selectedIconPath": "images/icon_around_selected.png",
+        "textStyle": {}
+      },
+      {
+        "pagePath": "pages/qa/qa",
+        "text": "问答",
+        "iconPath": "images/icon_story.png",
+        "selectedIconPath": "images/icon_story_selected.png",
+        "textStyle": {}
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "text": "我的",
+        "iconPath": "images/icon_mine.png",
+        "selectedIconPath": "images/icon_mine_selected.png",
+        "textStyle": {}
+      }
+    ]
+  },
+  "usingComponents": {},
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

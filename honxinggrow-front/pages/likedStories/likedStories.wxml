@@ -1,0 +1,80 @@
+<view class="page {{runAnim ? 'animate-entry' : 'anim-reset'}}">
+  <!-- 顶部背景装饰 -->
+  <view class="nebula-bg">
+    <view class="blob blob-1"></view>
+    <view class="blob blob-2"></view>
+  </view>
+
+  <!-- 顶部导航栏 (自定义) -->
+  <view class="custom-nav" style="padding-top: {{capsuleTop}}px; height: 44px;">
+    <view class="back-btn" bindtap="handleBack">
+      <text class="back-arrow">‹</text>
+    </view>
+    <view class="nav-title">已赞故事</view>
+  </view>
+
+  <view class="main-container">
+    <!-- 故事列表区域 -->
+    <view class="story-list">
+      <!-- 空状态 -->
+      <view class="empty-state animate-fade-in" wx:if="{{storyList.length === 0 && !loading}}">
+        <view class="empty-img-box">
+          <image src="/images/activity_default.jpg" mode="aspectFill"></image>
+        </view>
+        <text class="empty-t1">暂无已赞故事</text>
+        <text class="empty-t2">去首页发现精彩故事吧</text>
+      </view>
+
+      <!-- 列表循环 -->
+      <view 
+        class="story-card-wrap animate-slide-up" 
+        wx:for="{{storyList}}" 
+        wx:key="storyId" 
+        style="animation-delay: {{index * 0.1}}s"
+        bindtap="viewDetail" 
+        data-id="{{item.storyId}}"
+        hover-class="card-press"
+        hover-stay-time="100"
+      >
+        <view class="story-card">
+          <view class="card-visual">
+            <image src="{{item.coverUrl || '/images/activity_default.jpg'}}" mode="aspectFill" lazy-load></image>
+            <view class="visual-overlay"></view>
+            <view class="category-tag">已赞</view>
+          </view>
+          
+          <view class="card-content">
+            <view class="card-main">
+              <view class="story-title">{{item.title}}</view>
+              <view class="story-desc">{{item.summary}}</view>
+            </view>
+            
+            <view class="card-footer">
+              <view class="author-info">
+                 <text class="publish-date">{{item.publishTime}}</text>
+              </view>
+              <view class="interaction-data">
+                <view class="data-item">
+                  <text class="icon">👁</text> {{item.viewCount}}
+                </view>
+                <view class="data-item liked">
+                  <text class="icon">❤</text> {{item.likeCount}}
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 加载更多 -->
+      <view class="loading-bar" wx:if="{{loading}}">
+         <view class="spinner"></view>
+         <text>加载中...</text>
+      </view>
+      
+      <view class="loading-bar" wx:if="{{!loading && storyList.length > 0}}">
+         <text>— 已经到底啦 —</text>
+      </view>
+    </view>
+  </view>
+</view>

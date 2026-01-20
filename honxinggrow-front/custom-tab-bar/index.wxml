@@ -1,0 +1,11 @@
+<view class="tab-bar">
+  <view class="tab-bar-bg"></view>
+  <view wx:for="{{list}}" wx:key="index" class="tab-bar-item {{selected === index ? 'selected' : ''}}" data-path="{{item.pagePath}}" data-index="{{index}}" bindtap="switchTab">
+    <view class="icon-container">
+      <image src="{{selected === index ? item.selectedIconPath : item.iconPath}}" class="tab-bar-icon"></image>
+      <!-- "我的" tab (index=3) 显示红点 -->
+      <view class="red-dot" wx:if="{{index === 3 && showRedDot}}"></view>
+    </view>
+    <view class="tab-bar-text">{{item.text}}</view>
+  </view>
+</view>

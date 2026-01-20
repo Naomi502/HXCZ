@@ -1,0 +1,82 @@
+<view class="page">
+  <!-- 顶部背景 -->
+  <view class="nebula-bg">
+    <view class="blob blob-1"></view>
+    <view class="blob blob-2"></view>
+  </view>
+
+  <!-- 顶部导航栏/标题 -->
+  <view class="header-bar">
+    <!-- 顶部返回按钮 -->
+    <view class="back-btn" style="top: {{capsuleTop}}px;" bindtap="handleBack">
+      <text class="back-arrow">‹</text>
+    </view>
+
+    <view class="header-left">
+      <text class="page-title">心灵树洞</text>
+      <text class="page-subtitle">温暖相伴，倾听心声</text>
+    </view>
+    <view class="header-right">
+       <!-- 可以在这里放“我的记录”入口 -->
+       <view class="my-record-btn" bindtap="goToHistory">
+         <text>我的记录</text>
+       </view>
+    </view>
+  </view>
+
+  <!-- 内容列表 -->
+  <scroll-view 
+    class="scroll-container" 
+    scroll-y 
+    enable-back-to-top
+    refresher-enabled
+    refresher-triggered="{{refreshing}}"
+    bindrefresherrefresh="onPullDownRefresh"
+  >
+    <view class="card-list">
+      <block wx:for="{{treeholeList}}" wx:key="id">
+        <view class="treehole-card animate-slide-up" style="animation-delay: {{index * 0.1}}s" bindtap="onCardTap" data-id="{{item.id}}">
+          <!-- 卡片头部：用户信息 -->
+          <view class="card-header">
+            <view class="avatar" style="background-color: {{item.avatarColor}}">
+              <text class="avatar-text">匿</text>
+            </view>
+            <view class="user-info">
+              <text class="author-name">{{item.author}}</text>
+              <text class="post-time">{{item.createTime}}</text>
+            </view>
+            <view class="status-tag" wx:if="{{item.hasReply}}">
+              <text>老师已回复</text>
+            </view>
+          </view>
+
+          <!-- 卡片内容 -->
+          <view class="card-content">
+            <text class="content-text">{{item.content}}</text>
+          </view>
+
+          <!-- 卡片底部：互动区域 -->
+          <view class="card-footer">
+             <view class="action-btn {{item.isLiked ? 'liked' : ''}}" catchtap="onLike" data-id="{{item.id}}" data-index="{{index}}">
+               <text class="icon">{{item.isLiked ? '❤️' : '🤍'}}</text>
+               <text class="count">{{item.likes || 0}}</text>
+             </view>
+             <view class="action-btn">
+               <text class="icon">💬</text>
+               <text class="count">{{item.replyCount || 0}}</text>
+             </view>
+          </view>
+        </view>
+      </block>
+      
+      <!-- 底部垫高 -->
+      <view style="height: 100px;"></view>
+    </view>
+  </scroll-view>
+
+  <!-- 悬浮发布按钮 -->
+  <view class="fab-btn" bindtap="goToSend" hover-class="fab-hover">
+    <text class="fab-icon">✏️</text>
+    <text class="fab-text">倾诉</text>
+  </view>
+</view>

@@ -1,0 +1,595 @@
+/* 全局样式 */
+page {
+  background-color: #F7F8FA;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  color: #1A1D26;
+  --primary: #FF6B6B;
+  --primary-dark: #EE5253;
+  --text-main: #2C3E50;
+  --text-sub: #95A5A6;
+  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+/* 背景装饰 */
+.nebula-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 400px;
+  background: linear-gradient(180deg, #FFF0F0 0%, #F7F8FA 100%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(50px);
+  opacity: 0.5;
+}
+.blob-1 {
+  top: -60px; right: -40px;
+  width: 220px; height: 220px;
+  background: #FF6B6B;
+  animation: breathe 8s infinite ease-in-out;
+}
+.blob-2 {
+  top: 100px; left: -40px;
+  width: 160px; height: 160px;
+  background: #4ECDC4;
+  opacity: 0.3;
+  animation: float 10s infinite ease-in-out;
+}
+
+@keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(20px); } }
+
+.container {
+  padding: 24px;
+  padding-top: 100px;
+  padding-bottom: calc(150rpx + env(safe-area-inset-bottom));
+}
+
+/* 重写后的用户信息区域 */
+.user-profile {
+  display: flex;
+  align-items: center;
+  margin-bottom: 40rpx;
+  padding: 0 10rpx;
+}
+
+/* 1. 头像区域容器 */
+.avatar-area {
+  position: relative;
+  width: 120rpx !important; /* 强制宽度 */
+  height: 120rpx !important; /* 强制高度 */
+  min-width: 120rpx; /* 防止被 flex 挤压 */
+  min-height: 120rpx; /* 防止被 flex 挤压 */
+  margin-right: 32rpx;
+  flex-shrink: 0; /* 关键：禁止被挤压变形 */
+}
+
+/* 2. 透明按钮，铺满整个区域 */
+.avatar-btn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 120rpx !important; /* 强制尺寸 */
+  height: 120rpx !important; /* 强制尺寸 */
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border-radius: 50%;
+  border: none;
+  z-index: 1;
+}
+
+/* 3. 头像图片 */
+.avatar-img {
+  width: 120rpx !important; /* 强制尺寸 */
+  height: 120rpx !important; /* 强制尺寸 */
+  border-radius: 50%;
+  border: 4rpx solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-sizing: border-box;
+  display: block;
+}
+
+/* 4. 文字头像占位 */
+.avatar-text-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 48rpx;
+  font-weight: bold;
+  border: 4rpx solid rgba(255, 255, 255, 0.9);
+  box-sizing: border-box;
+}
+
+/* 5. 相机角标 (绝对定位) */
+.camera-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 40rpx;
+  height: 40rpx;
+  background: rgba(0,0,0,0.6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2rpx solid #fff;
+  z-index: 2; /* 在按钮之上，但在视觉上看来是一体的 */
+  pointer-events: none; /* 让点击穿透给下面的 button */
+}
+
+.camera-badge text {
+  font-size: 20rpx;
+  color: #fff;
+}
+
+/* 信息区域 */
+.info-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.avatar-box {
+  position: relative;
+  margin-right: 16px;
+}
+
+.avatar-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #E0E0E0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #FFFFFF;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.avatar-circle.active {
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
+}
+
+.avatar-text {
+  font-size: 24px;
+  color: #FFFFFF;
+  font-weight: 700;
+}
+
+.login-badge {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #2C3E50;
+  color: #fff;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.info-box {
+  flex: 1;
+}
+
+.name-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.username {
+  font-size: 20px;
+  font-weight: 700;
+  color: #2C3E50;
+  margin-right: 8px;
+}
+
+.role-tag {
+  background: #FFF0F0;
+  color: #FF6B6B;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+}
+
+.role-tag .icon {
+  font-size: 14px;
+}
+
+.desc-row {
+  font-size: 13px;
+  color: #95A5A6;
+}
+
+.arrow-box {
+  padding-left: 10px;
+}
+
+.arrow {
+  font-size: 20px;
+  color: #BDC3C7;
+}
+
+/* 数据概览卡片 */
+.stats-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 20px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  box-shadow: var(--card-shadow);
+  margin-bottom: 32px;
+}
+
+.stat-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #2C3E50;
+  font-family: 'DIN Alternate', sans-serif;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #95A5A6;
+}
+
+.divider {
+  width: 1px;
+  height: 24px;
+  background: #F0F2F5;
+}
+
+/* 菜单网格 (Bento Layout) */
+.menu-grid {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  margin-bottom: 32px;
+  height: 200px;
+}
+
+.grid-col-left {
+  flex: 1;
+  height: 100%;
+}
+
+.grid-col-right {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.bento-card {
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  transition: transform 0.1s;
+}
+
+/* 左侧树洞卡片 */
+.treehole-card {
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card-icon-big {
+  font-size: 40px;
+}
+
+.card-info-bottom {
+  margin-top: auto;
+}
+
+.card-title-lg {
+  font-size: 18px;
+  font-weight: 800;
+  color: #2C3E50;
+  margin-bottom: 6px;
+}
+
+.card-bg-icon {
+  position: absolute;
+  right: -20px;
+  bottom: -20px;
+  font-size: 120px;
+  opacity: 0.05;
+  pointer-events: none;
+}
+
+/* 右侧小卡片 */
+.small-card {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.card-content-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.card-info-side {
+  flex: 1;
+}
+
+.card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #2C3E50;
+  margin-bottom: 4px;
+}
+
+.card-desc {
+  font-size: 11px;
+  color: #95A5A6;
+}
+
+.card-icon-small {
+  font-size: 28px;
+  margin-left: 8px;
+}
+
+/* 颜色变体 */
+.pink .card-title-lg { color: #FF6B6B; }
+.blue .card-title { color: #54A0FF; }
+.orange .card-title { color: #FF9F43; }
+
+/* 列表菜单 */
+.list-menu {
+  background: #FFFFFF;
+  border-radius: 20px;
+  padding: 8px 20px;
+  box-shadow: var(--card-shadow);
+  margin-bottom: 32px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+  border-bottom: 1px solid #F7F8FA;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-left {
+  display: flex;
+  align-items: center;
+}
+
+.menu-icon-box {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  font-size: 16px;
+}
+
+.menu-icon-box.purple { background: #F3E5F5; }
+.menu-icon-box.gray { background: #F5F6FA; }
+.menu-icon-box.green { background: #E8F5E9; }
+.menu-icon-box.red-light { background: #FFEBEE; }
+
+.menu-name {
+  font-size: 15px;
+  color: #2C3E50;
+  font-weight: 500;
+}
+
+.badge {
+  background: #FF6B6B;
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-left: 8px;
+  font-weight: bold;
+}
+
+.menu-arrow {
+  color: #BDC3C7;
+  font-size: 18px;
+}
+
+/* 登录引导 */
+.login-guide {
+  text-align: center;
+  padding: 40px 0;
+}
+
+.guide-img {
+  width: 200px;
+  height: 150px;
+  margin-bottom: 20px;
+}
+
+.guide-text {
+  font-size: 14px;
+  color: #95A5A6;
+  margin-bottom: 20px;
+}
+
+.guide-btn {
+  background: #2C3E50;
+  color: #FFFFFF;
+  font-size: 14px;
+  padding: 10px 30px;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+/* 交互态 */
+.hover-opacity { opacity: 0.7; }
+.card-hover { transform: scale(0.98); }
+.list-hover { background: #FAFAFA; }
+
+/* 登录弹窗 */
+.modal-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.modal-box {
+  width: 280px;
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 30px 24px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: #2C3E50;
+}
+
+.modal-close {
+  font-size: 20px;
+  color: #BDC3C7;
+  padding: 4px;
+}
+
+.back-btn {
+  font-size: 20px;
+  color: #2C3E50;
+  padding: 4px;
+}
+
+.wechat-icon-box {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.wechat-icon {
+  width: 60px;
+  height: 60px;
+}
+
+.btn-wechat {
+  background: #07C160;
+  color: #FFFFFF;
+  border-radius: 24px;
+  font-size: 15px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px rgba(7, 193, 96, 0.3);
+}
+
+.wechat-tip {
+  text-align: center;
+  font-size: 12px;
+  color: #95A5A6;
+  margin-top: 12px;
+}
+
+.switch-login {
+  text-align: center;
+  font-size: 13px;
+  color: #FF6B6B;
+  margin-top: 20px;
+  font-weight: 500;
+}
+
+.input-group {
+  margin-bottom: 24px;
+}
+
+.input {
+  background: #F7F8FA;
+  border-radius: 12px;
+  height: 48px;
+  padding: 0 16px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: #2C3E50;
+}
+
+.btn-primary {
+  background: #2C3E50;
+  color: #FFFFFF;
+  border-radius: 24px;
+  font-size: 15px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px rgba(44, 62, 80, 0.3);
+}
+
+.forget-pwd {
+  text-align: center;
+  font-size: 12px;
+  color: #BDC3C7;
+  margin-top: 16px;
+}
+
+/* 动画 (Moved to app.wxss) */
+
+
+/* Loading */
+.loading-mask { position: fixed; inset: 0; background: rgba(255,255,255,0.9); display: flex; justify-content: center; align-items: center; z-index: 2000; }
+.loader { width: 30px; height: 30px; border: 3px solid #FF6B6B; border-radius: 50%; border-top-color: transparent; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }

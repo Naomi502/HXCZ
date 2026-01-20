@@ -1,0 +1,66 @@
+<view class="page">
+  <!-- 顶部背景 -->
+  <view class="nebula-bg">
+    <view class="blob blob-1"></view>
+    <view class="blob blob-2"></view>
+  </view>
+  
+  <view class="container">
+    <!-- 标题 -->
+    <view class="header animate-slide-up">
+      <view class="page-title">倾诉心声</view>
+      <view class="page-subtitle">在这里，你的每一份情绪都值得被听见</view>
+    </view>
+
+    <!-- 心情选择器 -->
+    <view class="mood-section animate-slide-up" style="animation-delay: 0.1s;">
+      <view class="section-label">此刻的心情</view>
+      <view class="mood-list">
+        <view 
+          class="mood-item {{selectedMood === item.key ? 'active' : ''}}" 
+          wx:for="{{moods}}" 
+          wx:key="key"
+          bindtap="onSelectMood"
+          data-key="{{item.key}}"
+        >
+          <text class="mood-icon">{{item.icon}}</text>
+          <text class="mood-label">{{item.label}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 输入区域 -->
+    <view class="input-card animate-slide-up" style="animation-delay: 0.2s;">
+      <textarea 
+        class="textarea" 
+        placeholder="写下你想说的话..." 
+        placeholder-class="placeholder"
+        bindinput="onInput"
+        value="{{content}}"
+        maxlength="500"
+        disable-default-padding
+      ></textarea>
+      <view class="bottom-bar">
+        <view class="anonymous-tip">
+          <text class="icon">🔒</text>
+          <text>匿名发布，保护隐私</text>
+        </view>
+        <view class="word-count {{content.length >= 500 ? 'warning' : ''}}">{{content.length}}/500</view>
+      </view>
+    </view>
+
+    <!-- 发送按钮 -->
+    <view class="action-area animate-slide-up" style="animation-delay: 0.3s;">
+      <button 
+        class="submit-btn" 
+        hover-class="btn-hover" 
+        bindtap="sendMessage"
+        disabled="{{submitting}}"
+        loading="{{submitting}}"
+      >
+        投递树洞
+      </button>
+      <view class="safe-tip">老师会定期查看并回复，请放心倾诉</view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,46 @@
+<view class="page">
+  <!-- 星云背景 -->
+  <view class="nebula-bg">
+    <view class="blob blob-1"></view>
+    <view class="blob blob-2"></view>
+  </view>
+  
+  <!-- 页面容器 -->
+  <view class="container">
+    <!-- 顶部返回按钮 -->
+    <view class="back-btn" style="top: {{capsuleTop}}px;" bindtap="handleBack">
+      <text class="back-arrow">‹</text>
+    </view>
+    
+    <!-- 标题区域 -->
+    <view class="header animate-slide-down">
+      <text class="title">历史记录</text>
+      <text class="subtitle">你发送过的消息</text>
+    </view>
+
+    <!-- 加载状态 -->
+    <view class="loading" wx:if="{{loading}}">
+      <view class="spinner"></view>
+      <text class="loading-text">加载中...</text>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty" wx:if="{{!loading && messages.length === 0}}">
+      <view class="empty-icon">📭</view>
+      <text class="empty-title">暂无消息记录</text>
+      <text class="empty-subtitle">去发送第一条消息吧</text>
+      <button class="empty-btn" bindtap="goToSend">发送消息</button>
+    </view>
+
+    <!-- 消息列表 -->
+    <view class="message-list" wx:if="{{!loading && messages.length > 0}}">
+      <view class="message-item" wx:for="{{messages}}" wx:key="treeHoleId">
+        <!-- 消息内容 -->
+        <view class="message-content">{{item.content}}</view>
+        
+        <!-- 消息时间 -->
+        <view class="message-time">{{item.createTime}}</view>
+      </view>
+    </view>
+  </view>
+</view>

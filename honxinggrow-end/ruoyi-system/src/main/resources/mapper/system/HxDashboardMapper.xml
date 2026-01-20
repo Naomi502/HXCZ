@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.HxDashboardMapper">
+
+    <select id="getStatistics" resultType="java.util.HashMap">
+        SELECT 
+            (SELECT COUNT(*) FROM hx_activity WHERE del_flag = '0') as activityCount,
+            (SELECT COUNT(*) FROM hx_activity WHERE del_flag = '0' AND status = '1') as ongoingActivityCount,
+            (SELECT COUNT(*) FROM hx_student_profile) as studentCount,
+            (SELECT COALESCE(SUM(points), 0) FROM hx_point_log) as totalPoints,
+            (SELECT COUNT(*) FROM hx_story WHERE del_flag = '0') as storyCount,
+            (SELECT COUNT(DISTINCT user_id) FROM hx_activity_participant 
+             WHERE create_time >= DATE_SUB(NOW(), INTERVAL 7 DAY)) as weeklyParticipantCount
+    </select>
+
+    <select id="getActivityTrend" resultType="java.util.HashMap">
+        SELECT 
+            DATE_FORMAT(create_time, '%Y-%m') as month,
+            COUNT(*) as count
+        FROM hx_activity
+        WHERE del_flag = '0'
+            AND create_time >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+        GROUP BY DATE_FORMAT(create_time, '%Y-%m')
+        ORDER BY month ASC
+    </select>
+
+    <select id="getPointsTrend" resultType="java.util.HashMap">
+        SELECT 
+            DATE_FORMAT(event_time, '%Y-%m') as month,
+            SUM(points) as points
+        FROM hx_point_log
+        WHERE event_time >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+        GROUP BY DATE_FORMAT(event_time, '%Y-%m')
+        ORDER BY month ASC
+    </select>
+
+    <select id="getTopStories" resultType="java.util.HashMap">
+        SELECT 
+            story_id,
+            title,
+            view_count,
+            like_count,
+            publish_time
+        FROM hx_story
+        WHERE del_flag = '0' AND status = '1'
+        ORDER BY view_count DESC, like_count DESC
+        LIMIT 10
+    </select>
+
+    <select id="getRecentActivities" resultType="java.util.HashMap">
+        SELECT 
+            activity_id,
+            title,
+            status,
+            start_time,
+            end_time,
+            participant_count,
+            publish_time
+        FROM hx_activity
+        WHERE del_flag = '0'
+        ORDER BY create_time DESC
+        LIMIT 5
+    </select>
+
+    <select id="getRecentStories" resultType="java.util.HashMap">
+        SELECT 
+            story_id,
+            title,
+            status,
+            view_count,
+            like_count,
+            publish_time
+        FROM hx_story
+        WHERE del_flag = '0'
+        ORDER BY create_time DESC
+        LIMIT 5
+    </select>
+
+    <select id="getRecentPointLogs" resultType="java.util.HashMap">
+        SELECT 
+            log_id,
+            user_id,
+            user_name,
+            biz_type,
+            points,
+            remark,
+            event_time
+        FROM hx_point_log
+        WHERE event_time >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+        ORDER BY event_time DESC
+        LIMIT 10
+    </select>
+
+</mapper>

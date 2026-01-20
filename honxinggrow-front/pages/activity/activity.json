@@ -1,0 +1,8 @@
+{
+  "navigationStyle": "custom",
+  "navigationBarTitleText": "活动",
+  "enablePullDownRefresh": true,
+  "usingComponents": {},
+  "backgroundTextStyle": "light",
+  "backgroundColor": "#FF4B4B"
+}

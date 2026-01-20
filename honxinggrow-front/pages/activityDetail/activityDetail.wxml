@@ -1,0 +1,174 @@
+<view class="page" animation="{{pageAnim}}">
+  <!-- 星云背景 -->
+  <view class="nebula-bg">
+    <view class="blob blob-1"></view>
+    <view class="blob blob-2"></view>
+  </view>
+
+  <!-- 返回按钮 -->
+  <view class="back-btn" style="top: {{capsuleTop}}px;" bindtap="handleBack">
+    <text class="back-arrow">‹</text>
+  </view>
+
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading-overlay">
+    <view class="spinner-container">
+      <view class="loading-spinner"></view>
+    </view>
+    <text class="loading-text">活动加载中...</text>
+  </view>
+
+  <view wx:else class="detail-container">
+    
+    <!-- 头部信息区 -->
+    <view class="header-area">
+      <!-- 背景封面融合 -->
+      <view class="header-bg-wrapper" wx:if="{{detailData.coverUrl}}">
+        <image class="header-bg-img" src="{{detailData.coverUrl}}" mode="aspectFill" binderror="handleImageError"></image>
+        <view class="header-bg-overlay"></view>
+      </view>
+      <!-- 右上角印章 (绝对定位在头部) -->
+      <view class="stamp-mark {{enrollStatus === '0' ? 'stamp-0' : (enrollStatus === '2' ? 'stamp-rejected' : (rewardGranted ? 'stamp-finished' : 'stamp-1'))}}" 
+            wx:if="{{enrollStatus && enrollStatus !== ''}}">
+        <view class="stamp-inner">
+          <!-- enrollStatus: 0-审核中, 1-报名成功(参加中), 2-被拒 -->
+          
+          <!-- 审核中 -->
+          <block wx:if="{{enrollStatus === '0'}}">
+            <text class="stamp-text">审核中</text>
+            <text class="stamp-date">PENDING</text>
+          </block>
+          
+          <!-- 被拒 -->
+          <block wx:elif="{{enrollStatus === '2'}}">
+            <text class="stamp-text">未通过</text>
+            <text class="stamp-date">REJECTED</text>
+          </block>
+
+          <!-- 报名成功 -->
+          <block wx:elif="{{enrollStatus === '1'}}">
+             <!-- 如果已获得奖励，显示已完成 -->
+             <block wx:if="{{rewardGranted}}">
+                <text class="stamp-text">已完成</text>
+                <text class="stamp-date">FINISHED</text>
+             </block>
+             <!-- 否则显示参加中 -->
+             <block wx:else>
+                <text class="stamp-text">参加中</text>
+                <text class="stamp-date">JOINED</text>
+             </block>
+          </block>
+        </view>
+      </view>
+      <view class="header-content">
+        <view class="status-row" wx:if="{{activityStatus}}">
+          <text class="status-pill">{{activityStatus}}</text>
+        </view>
+        <text class="main-title">{{detailData.title}}</text>
+        
+        <view class="meta-info-block">
+          <!-- 时间 -->
+          <view class="meta-row">
+            <text class="icon">📅</text>
+            <text class="meta-text">{{detailData.timeRange || (detailData.startTime || '待定')}}</text>
+          </view>
+          
+          <!-- 地点 -->
+          <view class="meta-row" wx:if="{{detailData.location}}">
+            <text class="icon">📍</text>
+            <text class="meta-text">{{detailData.location}}</text>
+          </view>
+          
+          <!-- 人数 -->
+          <view class="meta-row">
+            <text class="icon">👥</text>
+            <text class="meta-text">已报名 {{detailData.participantCount || 0}} 人 <text class="sub-text" wx:if="{{detailData.maxParticipants}}">(限 {{detailData.maxParticipants}} 人)</text></text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 摘要卡片 (玻璃态) -->
+    <view wx:if="{{detailData.summary}}" class="summary-glass">
+      <view class="quote-icon left">“</view>
+      <text class="summary-text">{{detailData.summary}}</text>
+      <view class="quote-icon right">”</view>
+    </view>
+
+    <!-- 正文内容卡片 -->
+    <view class="content-card">
+      <view class="section-header">
+        <text class="section-title">活动详情</text>
+        <view class="section-line"></view>
+      </view>
+      
+      <view class="richtext-wrapper">
+        <rich-text class="article-text" nodes="{{detailData.content || detailData.description}}"></rich-text>
+      </view>
+    </view>
+  
+    <!-- 参加证明卡片 (仅在已通过报名或有积分时显示) -->
+    <view class="content-card proof-card-wrapper" wx:if="{{(joined && enrollStatus === '1') || rewardGranted}}">
+       <view class="section-header">
+        <text class="section-title">✨ 参加证明</text>
+        <view class="points-badge" wx:if="{{rewardGranted}}">已获积分 +{{rewardPoints}}</view>
+      </view>
+
+      <view class="proof-content">
+        <!-- 状态栏 -->
+        <view class="status-bar">
+          <text class="label">审核状态</text>
+          <view class="status-value status-{{proofStatus}}">
+            <text class="dot"></text>{{proofStatusText}}
+          </view>
+        </view>
+
+        <!-- 审核意见 -->
+        <view class="feedback-box" wx:if="{{proofStatus === '3' && proofAuditRemark}}">
+          <text class="feedback-title">驳回原因：</text>
+          <text>{{proofAuditRemark}}</text>
+        </view>
+
+        <!-- 图片上传/展示区 -->
+        <view class="upload-area">
+          <block wx:if="{{proofImageUrl}}">
+            <image class="proof-img" src="{{proofImageUrl}}" mode="aspectFill" bindtap="previewProofImage"></image>
+            <view class="img-actions" wx:if="{{canSubmitProof}}">
+               <view class="reupload-btn" bindtap="chooseProofImage">更换图片</view>
+            </view>
+          </block>
+          
+          <!-- 上传按钮占位符 -->
+          <view wx:else class="upload-placeholder" bindtap="chooseProofImage">
+            <view class="upload-icon">+</view>
+            <text>上传现场照片或截图</text>
+          </view>
+        </view>
+        
+        <view class="upload-hint">{{proofHintText}}</view>
+      </view>
+    </view>
+
+    <!-- 底部垫片 -->
+    <view style="height: 100px;"></view>
+  </view>
+</view>
+
+<!-- 底部固定操作栏 -->
+<view wx:if="{{!loading}}" class="bottom-bar-glass">
+  <view class="bar-inner">
+    <!-- 未报名状态：显示操作按钮 -->
+    <button class="main-btn" 
+            wx:if="{{!joined || enrollStatus === '2'}}"
+            disabled="{{!canJoin}}" 
+            bindtap="joinActivity"
+            hover-class="btn-hover">
+      <text wx:if="{{enrollStatus === '2'}}">报名被拒，重新申请</text>
+      <text wx:else>申请报名参加</text>
+    </button>
+
+    <!-- 已报名/审核中状态：右上角印章展示，底部不显示按钮 -->
+  </view>
+</view>
+
+<!-- 底部固定操作栏 -->

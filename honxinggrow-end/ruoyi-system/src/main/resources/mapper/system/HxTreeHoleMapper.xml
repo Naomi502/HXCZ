@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.HxTreeHoleMapper">
+    
+    <resultMap type="HxTreeHole" id="HxTreeHoleResult">
+        <result property="treeHoleId"    column="tree_hole_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userName"    column="user_name"    />
+        <result property="nickName"    column="nick_name"    />
+        <result property="deptName"    column="dept_name"    />
+        <result property="content"    column="content"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="status"    column="status"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectHxTreeHoleVo">
+        select th.tree_hole_id, th.user_id, th.user_name, u.nick_name, d.dept_name, th.content, th.create_time, th.status, th.del_flag 
+        from hx_tree_hole th
+        left join sys_user u on th.user_id = u.user_id
+        left join sys_dept d on u.dept_id = d.dept_id
+    </sql>
+
+    <select id="selectHxTreeHoleList" parameterType="HxTreeHole" resultMap="HxTreeHoleResult">
+        <include refid="selectHxTreeHoleVo"/>
+        <where>  
+            <choose>
+                <when test="delFlag != null and delFlag != ''">
+                    th.del_flag = #{delFlag}
+                </when>
+                <otherwise>
+                    th.del_flag = '0'
+                </otherwise>
+            </choose>
+            <if test="userId != null "> and th.user_id = #{userId}</if>
+            <if test="userName != null  and userName != ''"> and th.user_name like concat('%', #{userName}, '%')</if>
+            <if test="nickName != null  and nickName != ''"> and u.nick_name like concat('%', #{nickName}, '%')</if>
+            <if test="content != null  and content != ''"> and th.content like concat('%', #{content}, '%')</if>
+            <if test="status != null  and status != ''"> and th.status = #{status}</if>
+        </where>
+        order by th.create_time desc
+    </select>
+    
+    <select id="selectHxTreeHoleByTreeHoleId" parameterType="Long" resultMap="HxTreeHoleResult">
+        <include refid="selectHxTreeHoleVo"/>
+        where th.tree_hole_id = #{treeHoleId} and th.del_flag = '0'
+    </select>
+
+    <insert id="insertHxTreeHole" parameterType="HxTreeHole" useGeneratedKeys="true" keyProperty="treeHoleId">
+        insert into hx_tree_hole
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="userName != null and userName != ''">user_name,</if>
+            <if test="content != null and content != ''">content,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="delFlag != null and delFlag != ''">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="userName != null and userName != ''">#{userName},</if>
+            <if test="content != null and content != ''">#{content},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="delFlag != null and delFlag != ''">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateHxTreeHole" parameterType="HxTreeHole">
+        update hx_tree_hole
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="userName != null and userName != ''">user_name = #{userName},</if>
+            <if test="content != null and content != ''">content = #{content},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="delFlag != null and delFlag != ''">del_flag = #{delFlag},</if>
+        </trim>
+        where tree_hole_id = #{treeHoleId}
+    </update>
+
+    <!-- 逻辑删除单个心灵树洞 -->
+    <update id="deleteHxTreeHoleByTreeHoleId" parameterType="Long">
+        update hx_tree_hole set del_flag = '1' where tree_hole_id = #{treeHoleId}
+    </update>
+
+    <!-- 逻辑删除多个心灵树洞 -->
+    <update id="deleteHxTreeHoleByTreeHoleIds" parameterType="String">
+        update hx_tree_hole set del_flag = '1' where tree_hole_id in 
+        <foreach item="treeHoleId" collection="array" open="(" separator="," close=")">
+            #{treeHoleId}
+        </foreach>
+    </update>
+</mapper>

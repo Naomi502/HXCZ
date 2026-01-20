@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.HxActivityMapper">
+
+    <resultMap id="HxActivityResult" type="com.ruoyi.system.domain.HxActivity">
+        <id     column="activity_id"          property="activityId"/>
+        <result column="title"                property="title"/>
+        <result column="summary"              property="summary"/>
+        <result column="cover_url"            property="coverUrl"/>
+        <result column="description"          property="description"/>
+        <result column="start_time"           property="startTime"/>
+        <result column="end_time"             property="endTime"/>
+        <result column="location"             property="location"/>
+        <result column="max_participants"     property="maxParticipants"/>
+        <result column="status"               property="status"/>
+        <result column="publish_time"         property="publishTime"/>
+        <result column="publish_user_id"      property="publishUserId"/>
+        <result column="publish_user_name"    property="publishUserName"/>
+        <result column="participant_count"    property="participantCount"/>
+        <result column="del_flag"             property="delFlag"/>
+        <result column="visible_post_ids"     property="visiblePostIds"/>
+        <result column="create_by"            property="createBy"/>
+        <result column="create_time"          property="createTime"/>
+        <result column="update_by"            property="updateBy"/>
+        <result column="update_time"          property="updateTime"/>
+        <result column="remark"               property="remark"/>
+    </resultMap>
+
+    <sql id="selectActivityColumns">
+        select activity_id, title, summary, cover_url, description, start_time, end_time,
+               location, max_participants, status, publish_time,
+               publish_user_id, publish_user_name, participant_count, del_flag, visible_post_ids,
+               create_by, create_time, update_by, update_time, remark
+        from hx_activity
+    </sql>
+
+    <select id="selectHxActivityById" parameterType="Long" resultMap="HxActivityResult">
+        <include refid="selectActivityColumns"/>
+        where activity_id = #{activityId} and del_flag = '0'
+    </select>
+
+    <select id="selectHxActivityList" parameterType="com.ruoyi.system.domain.HxActivity" resultMap="HxActivityResult">
+        <include refid="selectActivityColumns"/>
+        <where>
+            del_flag = '0'
+            <if test="title != null and title != ''">
+                and title like concat('%', #{title}, '%')
+            </if>
+            <if test="status != null and status != ''">
+                and status = #{status}
+            </if>
+            <if test="createBy != null and createBy != ''">
+                and create_by like concat('%', #{createBy}, '%')
+            </if>
+        </where>
+        order by publish_time desc, create_time desc
+    </select>
+
+    <select id="selectPublishedActivities" resultMap="HxActivityResult">
+        <include refid="selectActivityColumns"/>
+        where del_flag = '0' and status = '1'
+        order by publish_time desc, create_time desc
+    </select>
+
+    <select id="selectActivitiesForApp" resultMap="HxActivityResult">
+        <include refid="selectActivityColumns"/>
+        where del_flag = '0'
+        <choose>
+            <when test="statusList != null and statusList.size > 0">
+                and status in
+                <foreach collection="statusList" item="status" open="(" separator="," close=")">
+                    #{status}
+                </foreach>
+            </when>
+            <otherwise>
+                and status = '1'
+            </otherwise>
+        </choose>
+        <choose>
+            <when test="userPostIds != null and userPostIds.size > 0">
+                and (
+                    visible_post_ids is null 
+                    or visible_post_ids = '' 
+                    or 
+                    <foreach collection="userPostIds" item="postId" open="(" separator=" or " close=")">
+                        FIND_IN_SET(#{postId}, visible_post_ids) > 0
+                    </foreach>
+                )
+            </when>
+            <otherwise>
+                and (visible_post_ids is null or visible_post_ids = '')
+            </otherwise>
+        </choose>
+        order by publish_time desc, create_time desc
+    </select>
+
+    <insert id="insertHxActivity" parameterType="com.ruoyi.system.domain.HxActivity" useGeneratedKeys="true" keyProperty="activityId">
+        insert into hx_activity(
+            title, summary, cover_url, description, start_time, end_time, location,
+            max_participants, status, publish_time, publish_user_id, publish_user_name,
+            participant_count, del_flag, visible_post_ids, create_by, create_time, update_by, update_time, remark
+        ) values (
+            #{title}, #{summary}, #{coverUrl}, #{description}, #{startTime}, #{endTime}, #{location},
+            #{maxParticipants}, #{status}, #{publishTime}, #{publishUserId}, #{publishUserName},
+            #{participantCount}, #{delFlag}, #{visiblePostIds}, #{createBy}, #{createTime}, #{updateBy}, #{updateTime}, #{remark}
+        )
+    </insert>
+
+    <update id="updateHxActivity" parameterType="com.ruoyi.system.domain.HxActivity">
+        update hx_activity
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="summary != null">summary = #{summary},</if>
+            <if test="coverUrl != null">cover_url = #{coverUrl},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="location != null">location = #{location},</if>
+            <if test="maxParticipants != null">max_participants = #{maxParticipants},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="publishTime != null">publish_time = #{publishTime},</if>
+            <if test="publishUserId != null">publish_user_id = #{publishUserId},</if>
+            <if test="publishUserName != null">publish_user_name = #{publishUserName},</if>
+            <if test="participantCount != null">participant_count = #{participantCount},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <choose>
+                <when test="visiblePostIds != null and visiblePostIds != ''">
+                    visible_post_ids = #{visiblePostIds},
+                </when>
+                <otherwise>
+                    visible_post_ids = null,
+                </otherwise>
+            </choose>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            update_time = #{updateTime},
+            <if test="remark != null">remark = #{remark},</if>
+        </set>
+        where activity_id = #{activityId}
+    </update>
+
+    <update id="increaseParticipantCount" parameterType="Long">
+        update hx_activity
+        set participant_count = ifnull(participant_count, 0) + 1
+        where activity_id = #{activityId} and del_flag = '0'
+    </update>
+
+    <update id="decreaseParticipantCount" parameterType="Long">
+        update hx_activity
+        set participant_count = CASE WHEN ifnull(participant_count, 0) > 0 THEN participant_count - 1 ELSE 0 END
+        where activity_id = #{activityId} and del_flag = '0'
+    </update>
+    
+    <!-- 更新活动状态 -->
+    <update id="updateActivityStatus">
+        update hx_activity
+        set status = #{status},
+            update_time = sysdate()
+        where activity_id = #{activityId} and del_flag = '0'
+    </update>
+
+    <delete id="deleteHxActivityById" parameterType="Long">
+        update hx_activity set del_flag = '2', update_time = sysdate() where activity_id = #{activityId}
+    </delete>
+
+    <delete id="deleteHxActivityByIds" parameterType="Long">
+        update hx_activity set del_flag = '2', update_time = sysdate()
+        where activity_id in
+        <foreach collection="array" item="activityId" open="(" separator="," close=")">
+            #{activityId}
+        </foreach>
+    </delete>
+</mapper>

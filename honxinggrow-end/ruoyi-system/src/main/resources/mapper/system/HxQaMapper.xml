@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.HxQaMapper">
+
+    <resultMap id="HxQaResult" type="com.ruoyi.system.domain.HxQa">
+        <id     column="qa_id"               property="qaId"/>
+        <result column="title"               property="title"/>
+        <result column="content"             property="content"/>
+        <result column="video_url"           property="videoUrl"/>
+        <result column="status"              property="status"/>
+        <result column="sort"                property="sort"/>
+        <result column="publish_time"        property="publishTime"/>
+        <result column="publish_user_id"     property="publishUserId"/>
+        <result column="publish_user_name"   property="publishUserName"/>
+        <result column="view_count"          property="viewCount"/>
+        <result column="del_flag"            property="delFlag"/>
+        <result column="create_by"           property="createBy"/>
+        <result column="create_time"         property="createTime"/>
+        <result column="update_by"           property="updateBy"/>
+        <result column="update_time"         property="updateTime"/>
+        <result column="remark"              property="remark"/>
+    </resultMap>
+
+    <sql id="selectQaColumns">
+        select qa_id, title, content, video_url, status, sort, publish_time,
+               publish_user_id, publish_user_name, view_count, del_flag,
+               create_by, create_time, update_by, update_time, remark
+        from hx_qa
+    </sql>
+
+    <select id="selectHxQaById" parameterType="Long" resultMap="HxQaResult">
+        <include refid="selectQaColumns"/>
+        where qa_id = #{qaId} and del_flag = '0'
+    </select>
+
+    <select id="selectHxQaList" parameterType="com.ruoyi.system.domain.HxQa" resultMap="HxQaResult">
+        <include refid="selectQaColumns"/>
+        <where>
+            del_flag = '0'
+            <if test="title != null and title != ''">
+                and title like concat('%', #{title}, '%')
+            </if>
+            <if test="status != null and status != ''">
+                and status = #{status}
+            </if>
+            <if test="createBy != null and createBy != ''">
+                and create_by like concat('%', #{createBy}, '%')
+            </if>
+        </where>
+        order by sort asc, publish_time desc, create_time desc
+    </select>
+
+    <select id="selectPublishedQas" resultMap="HxQaResult">
+        <include refid="selectQaColumns"/>
+        where del_flag = '0' and status = '1'
+        order by sort asc, publish_time desc, create_time desc
+    </select>
+
+    <insert id="insertHxQa" parameterType="com.ruoyi.system.domain.HxQa" useGeneratedKeys="true" keyProperty="qaId">
+        insert into hx_qa(
+            title, content, video_url, status, sort, publish_time,
+            publish_user_id, publish_user_name, view_count, del_flag,
+            create_by, create_time, update_by, update_time, remark
+        ) values (
+            #{title}, #{content}, #{videoUrl}, #{status}, #{sort}, #{publishTime},
+            #{publishUserId}, #{publishUserName}, #{viewCount}, #{delFlag},
+            #{createBy}, #{createTime}, #{updateBy}, #{updateTime}, #{remark}
+        )
+    </insert>
+
+    <update id="updateHxQa" parameterType="com.ruoyi.system.domain.HxQa">
+        update hx_qa
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="videoUrl != null">video_url = #{videoUrl},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="publishTime != null">publish_time = #{publishTime},</if>
+            <if test="publishUserId != null">publish_user_id = #{publishUserId},</if>
+            <if test="publishUserName != null">publish_user_name = #{publishUserName},</if>
+            <if test="viewCount != null">view_count = #{viewCount},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            update_time = #{updateTime},
+            <if test="remark != null">remark = #{remark},</if>
+        </set>
+        where qa_id = #{qaId}
+    </update>
+
+    <update id="increaseViewCount" parameterType="Long">
+        update hx_qa
+        set view_count = ifnull(view_count, 0) + 1
+        where qa_id = #{qaId} and del_flag = '0'
+    </update>
+
+    <delete id="deleteHxQaById" parameterType="Long">
+        update hx_qa set del_flag = '2', update_time = sysdate() where qa_id = #{qaId}
+    </delete>
+
+    <delete id="deleteHxQaByIds" parameterType="Long">
+        update hx_qa set del_flag = '2', update_time = sysdate()
+        where qa_id in
+        <foreach collection="array" item="qaId" open="(" separator="," close=")">
+            #{qaId}
+        </foreach>
+    </delete>
+</mapper>

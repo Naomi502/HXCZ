@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.HxPointLogMapper">
+
+    <resultMap id="HxPointLogResult" type="com.ruoyi.system.domain.HxPointLog">
+        <id     column="log_id"        property="logId"/>
+        <result column="user_id"       property="userId"/>
+        <result column="user_name"     property="userName"/>
+        <result column="biz_type"      property="bizType"/>
+        <result column="biz_id"        property="bizId"/>
+        <result column="points"        property="points"/>
+        <result column="remark"        property="remark"/>
+        <result column="event_time"    property="eventTime"/>
+        <result column="create_by"     property="createBy"/>
+        <result column="create_time"   property="createTime"/>
+        <result column="update_by"     property="updateBy"/>
+        <result column="update_time"   property="updateTime"/>
+    </resultMap>
+
+    <sql id="selectPointLogColumns">
+        select log_id, user_id, user_name, biz_type, biz_id, points, remark,
+               event_time, create_by, create_time, update_by, update_time
+        from hx_point_log
+    </sql>
+
+    <select id="selectHxPointLogById" parameterType="Long" resultMap="HxPointLogResult">
+        <include refid="selectPointLogColumns"/>
+        where log_id = #{logId}
+    </select>
+
+    <select id="selectHxPointLogList" parameterType="com.ruoyi.system.domain.HxPointLog" resultMap="HxPointLogResult">
+        <include refid="selectPointLogColumns"/>
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="bizType != null and bizType != ''">
+                and biz_type = #{bizType}
+            </if>
+            <if test="createBy != null and createBy != ''">
+                and create_by like concat('%', #{createBy}, '%')
+            </if>
+            <if test="params != null and params.beginTime != null and params.beginTime != ''">
+                and date_format(event_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params != null and params.endTime != null and params.endTime != ''">
+                and date_format(event_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+        </where>
+        order by event_time desc, log_id desc
+    </select>
+
+    <insert id="insertHxPointLog" parameterType="com.ruoyi.system.domain.HxPointLog" useGeneratedKeys="true" keyProperty="logId">
+        insert into hx_point_log(
+            user_id, user_name, biz_type, biz_id, points, remark,
+            event_time, create_by, create_time, update_by, update_time
+        ) values (
+            #{userId}, #{userName}, #{bizType}, #{bizId}, #{points}, #{remark},
+            #{eventTime}, #{createBy}, #{createTime}, #{updateBy}, #{updateTime}
+        )
+    </insert>
+
+    <delete id="deleteHxPointLogById" parameterType="Long">
+        delete from hx_point_log where log_id = #{logId}
+    </delete>
+
+    <delete id="deleteHxPointLogByIds" parameterType="Long">
+        delete from hx_point_log where log_id in
+        <foreach collection="array" item="logId" open="(" separator="," close=")">
+            #{logId}
+        </foreach>
+    </delete>
+
+    <select id="selectByUserAndBiz" resultMap="HxPointLogResult">
+        <include refid="selectPointLogColumns"/>
+        where user_id = #{userId} and biz_type = #{bizType} and biz_id = #{bizId}
+        order by log_id desc
+        limit 1
+    </select>
+
+    <select id="selectDailyPointsByUserAndDateRange" resultType="java.util.HashMap">
+        select 
+            DATE(event_time) as date,
+            SUM(points) as points
+        from hx_point_log
+        where user_id = #{userId}
+          and points > 0
+          and event_time >= #{startDate}
+          and event_time &lt;= #{endDate}
+        group by DATE(event_time)
+        order by date asc
+    </select>
+
+    <select id="selectHourlyPointsByUserAndDateRange" resultType="java.util.HashMap">
+        select 
+            HOUR(event_time) as hour,
+            SUM(points) as points
+        from hx_point_log
+        where user_id = #{userId}
+          and points > 0
+          and event_time >= #{startDate}
+          and event_time &lt;= #{endDate}
+        group by HOUR(event_time)
+        order by hour asc
+    </select>
+</mapper>

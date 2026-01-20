@@ -1,0 +1,566 @@
+/* 全局样式 */
+page {
+  background-color: #F7F8FA;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  color: #1A1D26;
+  --primary: #FF6B6B;
+  --secondary: #4ECDC4;
+  --card-bg: #FFFFFF;
+}
+
+.page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 顶部背景装饰 */
+.nebula-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 400px;
+  background: linear-gradient(180deg, #FFF0F0 0%, #F7F8FA 100%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(50px);
+  opacity: 0.5;
+}
+.blob-1 {
+  top: -60px; right: -40px;
+  width: 200px; height: 200px;
+  background: #FF6B6B;
+  animation: breathe 8s infinite ease-in-out;
+}
+.blob-2 {
+  top: 60px; left: -40px;
+  width: 150px; height: 150px;
+  background: #4ECDC4;
+  opacity: 0.3;
+  animation: float 10s infinite ease-in-out;
+}
+
+@keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(20px); } }
+
+/* 头部导航栏 */
+.header-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+  padding: 0 24px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-start; /* 改为顶部对齐，通过 padding-top 控制位置 */
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column; /* 垂直排列 */
+  align-items: flex-start; /* 左对齐 */
+  justify-content: center; /* 垂直居中 */
+  height: 32px; /* 默认高度，会被 js 覆盖 */
+}
+
+.title-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.speaker-icon {
+  margin-left: 12rpx;
+  padding: 8rpx;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36rpx;
+  height: 36rpx;
+  font-size: 24rpx;
+  transition: all 0.2s;
+}
+
+.speaker-icon:active {
+  transform: scale(0.9);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.page-title {
+  font-size: 16px; /* 稍微调小一点，为副标题留空间 */
+  font-weight: 600;
+  color: #1A1D26;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+  margin-right: 0;
+}
+
+.page-disclaimer {
+  font-size: 9px;
+  color: #999;
+  background-color: transparent; /* 去掉背景，更简洁 */
+  padding: 0;
+  border-radius: 0;
+  margin-top: 2rpx;
+  transform: scale(0.9); /* 稍微缩小 */
+  transform-origin: left center;
+}
+
+.subtitle-row {
+    display: flex;
+    align-items: center;
+}
+
+/* 声纹动画 */
+.voice-wave {
+    display: flex;
+    align-items: center;
+    margin-left: 12rpx;
+    height: 12px;
+}
+
+.voice-wave .bar {
+    width: 2px;
+    background-color: #6bbcffff;
+    margin: 0 1px;
+    border-radius: 2px;
+    animation: wave 1s ease-in-out infinite;
+}
+
+.voice-wave .bar1 { animation-delay: 0s; height: 4px; }
+.voice-wave .bar2 { animation-delay: 0.2s; height: 8px; }
+.voice-wave .bar3 { animation-delay: 0.4s; height: 12px; }
+.voice-wave .bar4 { animation-delay: 0.2s; height: 8px; }
+.voice-wave .bar5 { animation-delay: 0s; height: 4px; }
+
+@keyframes wave {
+    0%, 100% { transform: scaleY(0.4); }
+    50% { transform: scaleY(1); }
+}
+
+/* 隐藏滚动条 */
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  color: transparent;
+}
+
+/* 聊天容器 */
+.chat-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 5;
+  height: 0; /* 关键：设置高度为0，让 flex: 1 生效并允许内部 scroll-view 滚动 */
+  overflow: hidden; /* 防止溢出 */
+}
+
+/* 顶部渐变遮罩 - 独立层 */
+.content-gradient-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  /* 高度由行内样式控制 */
+  background: linear-gradient(to bottom, #F7F8FA 70%, rgba(247, 248, 250, 0) 100%);
+  pointer-events: none;
+  z-index: 6; /* 位于数字人(8)之下，但在聊天内容(5)之上 */
+}
+
+/* 底部渐变遮罩 */
+.chat-container::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 300rpx; /* 增加高度，覆盖输入框区域 */
+  background: linear-gradient(to bottom, rgba(247, 248, 250, 0) 0%, rgba(247, 248, 250, 0.95) 20%, rgba(247, 248, 250, 1) 100%);
+  pointer-events: none; /* 允许点击穿透 */
+  z-index: 6;
+}
+
+.chat-list {
+  height: 100%; /* 占满容器 */
+  padding: 20rpx;
+  box-sizing: border-box;
+}
+
+/* 消息气泡 */
+.message {
+  display: flex;
+  margin-bottom: 30rpx;
+  align-items: flex-start;
+  animation: slideUp 0.3s ease-out forwards;
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.message.left {
+    margin-left: 0;
+}
+
+@keyframes slideUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.message.right {
+  flex-direction: row-reverse;
+}
+
+.avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background-color: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  border: 2px solid #fff;
+  flex-shrink: 0; /* 防止被挤压 */
+  margin-right: 20rpx; /* 增加右侧间距，针对左侧消息 */
+}
+
+/* 文字头像样式 (与个人中心保持一致但尺寸较小) */
+.avatar-circle-small {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 36rpx;
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(255, 154, 158, 0.4);
+  border: 2px solid #fff;
+  flex-shrink: 0;
+}
+
+/* 消息气泡基础样式 */
+.content {
+  max-width: 70%;
+  padding: 24rpx 32rpx;
+  border-radius: 20rpx;
+  font-size: 30rpx;
+  line-height: 1.6;
+  position: relative;
+  word-break: break-all;
+  min-height: 40rpx; /* 确保最小高度，避免切换时闪烁 */
+  transition: all 0.3s ease; /* 增加过渡 */
+}
+
+/* Loading 容器样式 */
+.content.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80rpx;
+  padding: 24rpx 24rpx; /* 调整 padding 让它看起来更小巧 */
+}
+
+/* 文本内容过渡动画 */
+.content text {
+  animation: fadeInText 0.4s ease-out forwards;
+}
+
+@keyframes fadeInText {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.message.left .content {
+  background-color: #fff;
+  color: #333;
+  border-top-left-radius: 4rpx;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.message.right .content {
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
+  color: #fff;
+  border-top-right-radius: 4rpx;
+}
+
+/* 底部输入区容器 - 悬浮胶囊样式 */
+.input-area-wrapper {
+  position: fixed;
+  bottom: calc(100rpx + env(safe-area-inset-bottom) + 20rpx); /* 悬浮在 TabBar 上方 */
+  left: 0;
+  width: 100%;
+  z-index: 20;
+  transform: translateY(100%);
+  opacity: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end; /* 底部对齐 */
+  pointer-events: none; /* 让wrapper不阻挡点击，只有内部元素可点 */
+}
+
+.slide-up-anim {
+  animation: slideUpWrapper 0.6s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+  animation-delay: 0.2s;
+}
+
+@keyframes slideUpWrapper {
+  from { transform: translateY(50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.input-area {
+  width: 90%;
+  max-width: 680rpx;
+  display: flex;
+  align-items: center;
+  pointer-events: auto; /* 恢复点击 */
+  gap: 20rpx; /* 间距 */
+}
+
+.input-box-container {
+  flex: 1;
+  height: 84rpx; /* 从 96rpx 缩小到 84rpx */
+  background-color: #FFFFFF;
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  padding: 0 32rpx;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.input-box {
+  flex: 1;
+  background-color: transparent;
+  height: 100%;
+  font-size: 30rpx;
+  color: #333333;
+}
+
+.input-box:focus {
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.input-placeholder {
+  color: #999999;
+}
+
+.send-btn {
+  width: 84rpx !important; /* 从 96rpx 缩小到 84rpx */
+  height: 84rpx !important; /* 从 96rpx 缩小到 84rpx */
+  /* 磨砂玻璃效果 */
+  background: rgba(7, 193, 96, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50% !important;
+  padding: 0;
+  margin: 0;
+  box-shadow: 0 8px 20px rgba(7, 193, 96, 0.25);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 84rpx; /* 同步缩小 */
+}
+
+/* 发送图标 - 极简纸飞机 */
+.send-icon {
+  width: 40rpx; /* 从 48rpx 缩小到 40rpx */
+  height: 40rpx;
+  margin-left: -4rpx;
+  margin-top: 4rpx;
+  filter: brightness(0) invert(1);
+}
+
+.send-btn:active {
+  transform: scale(0.92);
+  background-color: #06AD56;
+}
+
+.send-btn[disabled] {
+  background: #E0E0E0 !important;
+  box-shadow: none !important;
+}
+
+.send-btn:active {
+  transform: scale(0.96);
+  box-shadow: 0 2px 6px rgba(255, 107, 107, 0.2);
+}
+
+.send-btn[disabled] {
+  background: #E0E0E0 !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+
+/* Loading animation */
+.loading {
+  display: flex;
+  align-items: center;
+  height: 44rpx;
+  padding: 0 24rpx !important;
+}
+
+.dot {
+  width: 10rpx;
+  height: 10rpx;
+  background-color: #BDC3C7;
+  border-radius: 50%;
+  margin: 0 6rpx;
+  animation: dot-blink 1.4s infinite ease-in-out both;
+}
+
+.dot:nth-child(1) { animation-delay: -0.32s; }
+.dot:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes dot-blink {
+  0%, 80%, 100% { transform: scale(0); opacity: 0.5; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+/* 动画 */
+.animate-entry .header-bar {
+  animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+
+.animate-entry .chat-container {
+  animation: fadeIn 0.5s ease-out forwards;
+  opacity: 0;
+  animation-delay: 0.1s;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.anim-reset .header-bar,
+.anim-reset .chat-container {
+  opacity: 0;
+}
+
+/* 数字人悬浮窗 */
+.digital-human-container {
+    position: fixed;
+    left: 0;
+    right: 0;
+    height: 240px; 
+    z-index: 8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+}
+
+/* 极简光晕背景 - 增强色彩 */
+.tech-glow-bg {
+    position: absolute;
+    width: 220px;
+    height: 220px;
+    background: radial-gradient(circle, rgba(78, 205, 196, 0.5) 0%, rgba(255, 107, 107, 0.2) 60%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(25px);
+    opacity: 0.6;
+    animation: breathe-glow 4s ease-in-out infinite;
+    z-index: 1;
+}
+
+/* 全息投影底座 */
+.hologram-base {
+    position: absolute;
+    bottom: -5px;
+    width: 140px;
+    height: 40px;
+    background: radial-gradient(ellipse at center, rgba(78, 156, 205, 0.87) 0%, transparent 70%);
+    border-radius: 50%;
+    transform: scaleY(0.4);
+    filter: blur(8px);
+    z-index: 1;
+    opacity: 0.8;
+}
+
+/* 能量波纹 */
+.energy-ripple {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    border: 2px solid rgba(78, 205, 196, 0.6);
+    border-radius: 50%;
+    opacity: 0;
+    animation: ripple 2s linear infinite;
+}
+
+/* 粒子容器 */
+.particles-container {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* 粒子通用样式 */
+.particle {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    opacity: 0;
+}
+
+.p1 { width: 3px; height: 3px; left: 20%; bottom: 20%; animation: float-up 3s ease-in infinite; }
+.p2 { width: 4px; height: 4px; left: 50%; bottom: 15%; animation: float-up 4s ease-in 1s infinite; }
+.p3 { width: 2px; height: 2px; left: 80%; bottom: 25%; animation: float-up 3.5s ease-in 0.5s infinite; }
+.p4 { width: 3px; height: 3px; left: 40%; bottom: 10%; animation: float-up 5s ease-in 2s infinite; }
+
+.digital-human-img {
+    width: 400px;
+    height: 380px;
+    position: relative;
+    z-index: 2;
+    /* 轻微浮动动画 */
+    animation: float-human 6s ease-in-out infinite;
+    /* 增加底部投影感 */
+    filter: drop-shadow(0 10px 10px rgba(78, 205, 196, 0.3));
+}
+
+@keyframes breathe-glow {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+@keyframes float-human {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+@keyframes ripple {
+    0% { width: 60%; height: 60%; opacity: 0.8; border-width: 2px; }
+    100% { width: 180%; height: 180%; opacity: 0; border-width: 0px; }
+}
+
+@keyframes float-up {
+    0% { transform: translateY(0) scale(1); opacity: 0; }
+    20% { opacity: 0.8; }
+    100% { transform: translateY(-100px) scale(0.5); opacity: 0; }
+}

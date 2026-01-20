@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.HxUserWechatMapper">
+
+    <resultMap id="HxUserWechatResult" type="com.ruoyi.system.domain.HxUserWechat">
+        <id     property="bindId"        column="bind_id"/>
+        <result property="userId"        column="user_id"/>
+        <result property="openid"        column="openid"/>
+        <result property="sessionKey"    column="session_key"/>
+        <result property="bindTime"      column="bind_time"/>
+        <result property="lastLoginTime" column="last_login_time"/>
+        <result property="createTime"    column="create_time"/>
+        <result property="updateTime"    column="update_time"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        bind_id, user_id, openid, session_key, bind_time, last_login_time, create_time, update_time
+    </sql>
+
+    <select id="selectByUserId" parameterType="Long" resultMap="HxUserWechatResult">
+        select <include refid="Base_Column_List"/>
+        from hx_user_wechat
+        where user_id = #{userId}
+        limit 1
+    </select>
+
+    <select id="selectByOpenid" parameterType="String" resultMap="HxUserWechatResult">
+        select <include refid="Base_Column_List"/>
+        from hx_user_wechat
+        where openid = #{openid}
+        limit 1
+    </select>
+
+    <insert id="insertHxUserWechat" parameterType="com.ruoyi.system.domain.HxUserWechat" useGeneratedKeys="true" keyProperty="bindId">
+        insert into hx_user_wechat (user_id, openid, session_key, bind_time, last_login_time, create_time, update_time)
+        values (#{userId}, #{openid}, #{sessionKey}, #{bindTime}, #{lastLoginTime}, #{createTime}, #{updateTime})
+    </insert>
+
+    <update id="updateHxUserWechat" parameterType="com.ruoyi.system.domain.HxUserWechat">
+        update hx_user_wechat
+        <set>
+            <if test="openid != null">openid = #{openid},</if>
+            <if test="sessionKey != null">session_key = #{sessionKey},</if>
+            <if test="bindTime != null">bind_time = #{bindTime},</if>
+            <if test="lastLoginTime != null">last_login_time = #{lastLoginTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        where bind_id = #{bindId}
+    </update>
+
+    <update id="updateLoginTime">
+        update hx_user_wechat
+        set last_login_time = #{lastLoginTime}, update_time = #{lastLoginTime}
+        where bind_id = #{bindId}
+    </update>
+
+    <delete id="deleteByUserId" parameterType="Long">
+        delete from hx_user_wechat
+        where user_id = #{userId}
+    </delete>
+
+</mapper>
+
+

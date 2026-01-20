@@ -1,0 +1,123 @@
+<view class="page" animation="{{pageAnim}}">
+  <!-- 背景装饰 -->
+  <view class="nebula-bg">
+    <view class="blob blob-1"></view>
+    <view class="blob blob-2"></view>
+  </view>
+
+  <!-- 头部区域 -->
+  <view class="header-section">
+    <!-- 顶部返回按钮 -->
+    <view class="back-btn" style="top: {{capsuleTop}}px;" bindtap="handleBack">
+      <text class="back-arrow">‹</text>
+    </view>
+    
+    <!-- 导航栏标题占位 (适配自定义导航栏) -->
+    <view class="nav-placeholder"></view>
+    
+    <view class="header-content animate-slide-down">
+      <view class="title-group">
+        <view class="page-title">积分明细</view>
+        <view class="page-subtitle">每一份努力都值得被记录</view>
+      </view>
+      
+      <!-- 核心资产卡片 -->
+      <view class="asset-card">
+        <view class="card-bg-decoration"></view>
+        <view class="asset-info">
+          <view class="label">当前可用积分</view>
+          <view class="value-row">
+            <text class="value">{{totalPoints}}</text>
+            <text class="unit">分</text>
+          </view>
+        </view>
+        <view class="asset-icon">💰</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 列表容器 -->
+  <view class="list-container animate-slide-up">
+    <!-- 筛选栏 -->
+    <view class="filter-bar">
+      <view 
+        class="filter-item {{currentFilter === 'all' ? 'active' : ''}}" 
+        bindtap="filterLogs" 
+        data-type="all"
+      >全部</view>
+      <view 
+        class="filter-item {{currentFilter === 'income' ? 'active' : ''}}" 
+        bindtap="filterLogs" 
+        data-type="income"
+      >获得</view>
+      <view 
+        class="filter-item {{currentFilter === 'expense' ? 'active' : ''}}" 
+        bindtap="filterLogs" 
+        data-type="expense"
+      >消耗</view>
+    </view>
+
+    <!-- 滚动列表 -->
+    <scroll-view 
+      class="scroll-view" 
+      scroll-y="true" 
+      refresher-enabled="{{true}}" 
+      refresher-triggered="{{refreshing}}" 
+      bindrefresherrefresh="onRefresh" 
+      lower-threshold="100" 
+      bindscrolltolower="loadMore"
+    >
+      <view class="log-list">
+        <!-- Loading -->
+        <view wx:if="{{loading && logs.length === 0}}" class="state-box">
+          <view class="loader"></view>
+          <text>加载中...</text>
+        </view>
+        
+        <!-- Empty -->
+        <view wx:elif="{{filteredLogs.length === 0}}" class="state-box">
+          <image class="empty-img" src="/images/empty-box.svg" mode="aspectFit" wx:if="{{false}}"></image> <!-- 预留图片位 -->
+          <text class="empty-emoji">📝</text>
+          <text>暂无积分记录</text>
+        </view>
+
+        <!-- List Items -->
+        <block wx:else>
+          <view 
+            wx:for="{{filteredLogs}}" 
+            wx:key="logId" 
+            class="log-card"
+            hover-class="card-hover"
+          >
+            <!-- 左侧图标 -->
+            <view class="icon-box {{item.points >= 0 ? 'income' : 'expense'}}">
+              <text>{{item.points >= 0 ? '📥' : '📤'}}</text>
+            </view>
+            
+            <!-- 中间信息 -->
+            <view class="info-box">
+              <view class="log-title">{{item.remark || '系统记录'}}</view>
+              <view class="log-meta">
+                <text class="log-type-tag">{{item.bizType || '常规'}}</text>
+                <text class="log-time">{{item.eventTime}}</text>
+              </view>
+            </view>
+            
+            <!-- 右侧数值 -->
+            <view class="value-box">
+              <text class="points-num {{item.points >= 0 ? 'plus' : 'minus'}}">
+                {{item.points >= 0 ? '+' : ''}}{{item.points}}
+              </text>
+            </view>
+          </view>
+
+          <!-- Load More -->
+          <view class="footer-state">
+            <text wx:if="{{hasMore}}">加载更多...</text>
+            <text wx:else>— 没有更多记录了 —</text>
+          </view>
+        </block>
+      </view>
+    </scroll-view>
+  </view>
+</view>

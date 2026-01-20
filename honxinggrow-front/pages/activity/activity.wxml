@@ -1,0 +1,161 @@
+<view class="page {{runAnim ? 'animate-entry' : 'anim-reset'}}">
+  <!-- === 顶部背景装饰：流体星云 === -->
+  <view class="deco-layer">
+    <view class="blob blob-giant"></view>
+    <view class="blob blob-wander"></view>
+    <view class="blob blob-spark"></view>
+  </view>
+
+  <!-- === Hero 区域 === -->
+  <view class="hero">
+    <!-- 背景图 -->
+    <image class="hero-bg" src="/images/activity_default.jpg" mode="aspectFill"></image>
+    <view class="hero-overlay"></view>
+    
+    <view class="hero-content animate-slide-down">
+      <view class="hero-header">
+        <view class="hero-pill">
+          <view class="dot"></view>红芯活动志
+        </view>
+        <!-- 这里可以放类似"进行中"的状态 -->
+        <view class="online-badge">
+          <view class="pulse-dot"></view> 正在报名
+        </view>
+      </view>
+      
+      <view class="hero-text-group">
+        <view class="hero-title">参与，与温暖<text class="highlight">同行</text></view>
+        <view class="hero-subtitle">与伙伴一起在行动中成长</view>
+      </view>
+    </view>
+
+    <!-- 悬浮玻璃数据条 -->
+    <view class="hero-stats-glass animate-slide-down" style="animation-delay: 0.1s;">
+      <view class="stat-item">
+        <text class="stat-num">{{filteredActivities.length || 0}}</text>
+        <text class="stat-label">当前活动</text>
+      </view>
+      <view class="stat-line"></view>
+      <view class="stat-item">
+        <!-- 假设总数是 5，或者从 data 获取 -->
+        <text class="stat-num">5</text>
+        <text class="stat-label">历史举办</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- === 主体内容区 === -->
+  <view class="main-container">
+    
+    <!-- 登录引导 (未登录时显示) -->
+    <view class="login-wrapper animate-fade-in" style="animation-delay: 0.2s;" wx:if="{{!isLoggedIn}}">
+      <view class="login-glass-card" hover-class="card-hover">
+        <view class="icon-box">
+          <text style="font-size:22px;">🔐</text>
+        </view>
+        <view class="login-info">
+          <text class="login-h1">登录即可报名活动</text>
+          <text class="login-p">活动信息、积分成就一站同步</text>
+        </view>
+        <view class="login-btn">去登录</view>
+      </view>
+    </view>
+
+    <!-- 活动列表区域 -->
+    <view wx:if="{{isLoggedIn}}">
+      <!-- 标题栏 -->
+      <view class="section-header animate-fade-in" style="animation-delay: 0.3s;">
+        <view class="header-left">
+          <text class="title">热门活动</text>
+          <text class="badge">Hot</text>
+        </view>
+
+      </view>
+
+      <view class="activity-list">
+        <!-- 空状态 -->
+        <view class="empty-state animate-fade-in" wx:if="{{filteredActivities.length === 0 && !loading}}">
+          <view class="empty-img-box">
+            <image src="/images/activity_default.jpg" mode="aspectFill"></image>
+          </view>
+          <text class="empty-t1">暂无活动</text>
+          <text class="empty-t2">稍后再来看看吧</text>
+        </view>
+
+        <!-- 列表循环 -->
+        <view 
+          class="story-card-wrap animate-slide-up" 
+          wx:for="{{filteredActivities}}" 
+          wx:key="activityId"
+          style="animation-delay: {{index * 0.1 + 0.4}}s"
+          bindtap="viewDetail" 
+          data-id="{{item.activityId}}"
+          hover-class="card-press"
+          hover-stay-time="100"
+        >
+          <!-- 复用 Story Card 的外壳，内部针对活动微调 -->
+          <view class="story-card">
+            <!-- 上半部分：图片 & 状态 -->
+            <view class="card-visual">
+              <image src="{{item.coverUrl}}" mode="aspectFill" lazy-load></image>
+              <view class="visual-overlay"></view>
+              
+              <!-- 状态标签：根据 statusType 动态改变颜色 -->
+              <view class="category-tag {{item.statusType || 'default'}}">
+                {{item.status}}
+              </view>
+            </view>
+            
+            <!-- 下半部分：内容 -->
+            <view class="card-content">
+              <view class="card-main">
+                <view class="story-title">{{item.title}}</view>
+                
+                <!-- 活动特有元数据：时间 & 地点 -->
+                <view class="meta-info-box">
+                  <view class="meta-row">
+                    <icon type="waiting" size="14" color="#FF4B4B" class="meta-icon"/>
+                    <text class="meta-text">{{item.timeRange || (item.startTime || '时间待定')}}</text>
+                  </view>
+                  <view class="meta-row">
+                    <icon type="location" size="14" color="#858B9C" class="meta-icon"/>
+                    <text class="meta-text">{{item.location || '地点待定'}}</text>
+                  </view>
+                </view>
+
+                <view class="story-desc">{{item.summary || '主办方正在补充活动介绍...'}}</view>
+              </view>
+              
+              <!-- 底部：报名人数 & 操作 -->
+              <view class="card-footer">
+                <view class="author-info">
+                   <view class="participant-avatars" wx:if="{{false}}">
+                     <!-- 如果有头像列表可以放这里，暂时用文字 -->
+                   </view>
+                   <text class="publish-date">
+                     <text style="color:var(--primary); font-weight:600;">{{item.participantCount}}人已报名</text> 
+                     <text wx:if="{{item.maxParticipants}}"> / 限 {{item.maxParticipants}} 人</text>
+                   </text>
+                </view>
+                
+                <view class="action-btn-small">
+                  详情
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 加载更多 -->
+        <view class="loading-bar" wx:if="{{loading}}">
+           <view class="spinner"></view>
+           <text>精彩活动加载中...</text>
+        </view>
+        
+        <view class="loading-bar" wx:if="{{!loading && filteredActivities.length > 0 && !hasMore}}">
+           <text>— 已经到底啦 —</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
