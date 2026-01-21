@@ -58,6 +58,12 @@ public class HxStudentProfile extends BaseEntity
     @Excel(name = "状态")
     private String status;
 
+    @Excel(name = "故事数")
+    private Integer storyCount;
+
+    @Excel(name = "活动数")
+    private Integer activityCount;
+
 
     public Long getProfileId()
     {

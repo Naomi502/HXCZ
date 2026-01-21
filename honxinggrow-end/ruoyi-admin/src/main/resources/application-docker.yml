@@ -1,0 +1,17 @@
+ruoyi:
+  profile: ${RUOYI_PROFILE:/data/upload}
+
+spring:
+  redis:
+    host: ${REDIS_HOST:redis}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD:}
+  datasource:
+    druid:
+      master:
+        url: jdbc:mysql://${MYSQL_HOST:mysql}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:yzpc}?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+        username: ${MYSQL_USER:ruoyi}
+        password: ${MYSQL_PASSWORD:ruoyi}
+      slave:
+        enabled: false
+

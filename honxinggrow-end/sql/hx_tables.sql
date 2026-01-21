@@ -155,9 +155,9 @@ create table hx_file (
 -- 文件管理菜单
 insert into sys_menu values(null,  '文件管理',  '1200','4', 'file',     'hx/file/index',            '', '', 1, 0, 'C', '0', '0', 'hx:file:list',             'folder',        'admin', sysdate(), '', null, '文件管理菜单');
 -- 文件管理权限点
-insert into sys_menu values(null, '文件查询',  (select menu_id from sys_menu where menu_name = '文件管理' and parent_id = '1200'),'1', '',          '',                         '', '', 1, 0, 'F', '0', '0', 'hx:file:query',            '#',             'admin', sysdate(), '', null, '');
-insert into sys_menu values(null, '文件上传',  (select menu_id from sys_menu where menu_name = '文件管理' and parent_id = '1200'),'2', '',          '',                         '', '', 1, 0, 'F', '0', '0', 'hx:file:add',              '#',             'admin', sysdate(), '', null, '');
-insert into sys_menu values(null, '文件删除',  (select menu_id from sys_menu where menu_name = '文件管理' and parent_id = '1200'),'3', '',          '',                         '', '', 1, 0, 'F', '0', '0', 'hx:file:remove',           '#',             'admin', sysdate(), '', null, '');
+insert into sys_menu values(null, '文件查询',  (select menu_id from (select menu_id from sys_menu where menu_name = '文件管理' and parent_id = '1200') t),'1', '',          '',                         '', '', 1, 0, 'F', '0', '0', 'hx:file:query',            '#',             'admin', sysdate(), '', null, '');
+insert into sys_menu values(null, '文件上传',  (select menu_id from (select menu_id from sys_menu where menu_name = '文件管理' and parent_id = '1200') t),'2', '',          '',                         '', '', 1, 0, 'F', '0', '0', 'hx:file:add',              '#',             'admin', sysdate(), '', null, '');
+insert into sys_menu values(null, '文件删除',  (select menu_id from (select menu_id from sys_menu where menu_name = '文件管理' and parent_id = '1200') t),'3', '',          '',                         '', '', 1, 0, 'F', '0', '0', 'hx:file:remove',           '#',             'admin', sysdate(), '', null, '');
 
 -- 或者使用以下方式，先删除可能存在的菜单，再重新插入
 -- delete from sys_menu where menu_name = '文件管理' or parent_id in (select menu_id from sys_menu where menu_name = '文件管理');
