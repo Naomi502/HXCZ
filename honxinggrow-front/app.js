@@ -7,7 +7,7 @@ App({
     useCloud: wx.getAccountInfoSync().miniProgram.envVersion !== 'develop', 
     apiBaseUrl: wx.getAccountInfoSync().miniProgram.envVersion === 'develop' 
       ? 'http://localhost:8080' 
-      : 'http://59.110.229.252:8080',
+      : 'http://59.110.229.252/prod-api',
     token: '',
     userInfo: null,
     profile: null,
