@@ -8,7 +8,7 @@ spring:
             master:
                 url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:yzpc}?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
                 username: ${MYSQL_USER:yzpc}
-                password: ${MYSQL_PASSWORD:ruoyi}
+                password: ${MYSQL_PASSWORD:ZnYAtKHC4KEfJJcW}
             # 从库数据源
             slave:
                 # 从数据源开关/默认关闭
