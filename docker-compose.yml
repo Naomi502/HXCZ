@@ -1,34 +1,34 @@
 services:
-  mysql:
-    image: mysql:8.0
-    command:
-      - --character-set-server=utf8mb4
-      - --collation-server=utf8mb4_general_ci
-      - --default-authentication-plugin=mysql_native_password
-    environment:
-      TZ: ${TZ:-Asia/Shanghai}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-yzpc}
-      MYSQL_USER: ${MYSQL_USER:-ruoyi}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-ruoyi}
-    ports:
-      - "${MYSQL_PORT:-3306}:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./docker/mysql/00_init.sql:/docker-entrypoint-initdb.d/00_init.sql:ro
-      - ./yzpc_2026-01-21_04-00-01_mysql_data.sql:/docker-entrypoint-initdb.d/sql/yzpc_mysql_data.sql:ro
-    restart: unless-stopped
+  # mysql:  # 使用宝塔MySQL，无需Docker容器
+  #   image: mysql:8.0
+  #   command:
+  #     - --character-set-server=utf8mb4
+  #     - --collation-server=utf8mb4_general_ci
+  #     - --default-authentication-plugin=mysql_native_password
+  #   environment:
+  #     TZ: ${TZ:-Asia/Shanghai}
+  #     MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+  #     MYSQL_DATABASE: ${MYSQL_DATABASE:-yzpc}
+  #     MYSQL_USER: ${MYSQL_USER:-ruoyi}
+  #     MYSQL_PASSWORD: ${MYSQL_PASSWORD:-ruoyi}
+  #   ports:
+  #     - "${MYSQL_PORT:-3306}:3306"
+  #   volumes:
+  #     - mysql_data:/var/lib/mysql
+  #     - ./docker/mysql/00_init.sql:/docker-entrypoint-initdb.d/00_init.sql:ro
+  #     - ./yzpc_2026-01-21_04-00-01_mysql_data.sql:/docker-entrypoint-initdb.d/sql/yzpc_mysql_data.sql:ro
+  #   restart: unless-stopped
 
-  redis:
-    image: redis:6-alpine
-    command: ["redis-server", "--appendonly", "yes"]
-    environment:
-      TZ: ${TZ:-Asia/Shanghai}
-    ports:
-      - "${REDIS_PORT:-6379}:6379"
-    volumes:
-      - redis_data:/data
-    restart: unless-stopped
+  # redis:  # 使用宝塔Redis，无需Docker容器
+  #   image: redis:6-alpine
+  #   command: ["redis-server", "--appendonly", "yes"]
+  #   environment:
+  #     TZ: ${TZ:-Asia/Shanghai}
+  #   ports:
+  #     - "${REDIS_PORT:-6379}:6379"
+  #   volumes:
+  #     - redis_data:/data
+  #   restart: unless-stopped
 
   backend:
     image: hxcz-backend:prod
@@ -39,22 +39,20 @@ services:
       TZ: ${TZ:-Asia/Shanghai}
       JAVA_OPTS: ${JAVA_OPTS:--Dlog.path=/data/logs}
       SPRING_PROFILES_ACTIVE: docker,druid
-      MYSQL_HOST: mysql
+      MYSQL_HOST: 59.110.229.252
       MYSQL_PORT: 3306
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-yzpc}
-      MYSQL_USER: ${MYSQL_USER:-ruoyi}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-ruoyi}
-      REDIS_HOST: redis
+      MYSQL_DATABASE: yzpc
+      MYSQL_USER: yzpc
+      MYSQL_PASSWORD: ZnYAtKHC4KEfJJcW
+      REDIS_HOST: 59.110.229.252
       REDIS_PORT: 6379
+      REDIS_PASSWORD:
       RUOYI_PROFILE: /data/upload
     ports:
       - "${BACKEND_PORT:-8080}:8080"
     volumes:
       - ./bt-data/upload:/data/upload
       - ./bt-data/logs:/data/logs
-    depends_on:
-      - mysql
-      - redis
     restart: unless-stopped
 
   admin-web:
@@ -71,5 +69,5 @@ services:
     restart: unless-stopped
 
 volumes:
-  mysql_data:
-  redis_data:
+  # mysql_data:  # 使用宝塔MySQL，无需此volume
+  # redis_data:  # 使用宝塔Redis，无需此volume

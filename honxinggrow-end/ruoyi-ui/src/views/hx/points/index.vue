@@ -196,7 +196,7 @@
     </el-dialog>
 
     <!-- 学生活动记录对话框 -->
-    <el-dialog :title="`学生活动记录 - ${activityQuery.userName}`" :visible.sync="activityOpen" width="800px" append-to-body>
+    <el-dialog :title="`学生活动记录 - ${activityQuery.userName}`" :visible.sync="activityOpen" width="1600px" append-to-body>
       <el-table v-loading="activityLoading" :data="activityList">
         <el-table-column prop="activityId" label="活动ID" width="100" />
         <el-table-column prop="title" label="活动标题" min-width="200" />
