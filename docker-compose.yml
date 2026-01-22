@@ -45,7 +45,7 @@ services:
       MYSQL_DATABASE: yzpc
       MYSQL_USER: yzpc
       MYSQL_PASSWORD: ZnYAtKHC4KEfJJcW
-      REDIS_HOST: 59.110.229.252
+      REDIS_HOST: 127.0.0.1
       REDIS_PORT: 6379
       REDIS_PASSWORD:
       RUOYI_PROFILE: /data/upload
