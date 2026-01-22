@@ -1,5 +1,4 @@
-services:
-  # MySQL: 使用宝塔MySQL，无需Docker容器
+# Auto-deploy test
   #   image: mysql:8.0
   #   command:
   #     - --character-set-server=utf8mb4
