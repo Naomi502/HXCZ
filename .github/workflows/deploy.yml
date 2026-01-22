@@ -20,7 +20,7 @@ jobs:
       
       - name: Build Backend
         run: |
-          cd honxinggrow-end/ruoyi-admin
+          cd honxinggrow-end
           mvn clean package -DskipTests
       
       # 构建前端
