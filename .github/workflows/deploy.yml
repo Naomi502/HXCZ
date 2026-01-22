@@ -41,7 +41,7 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: root
-          password: ${{ secrets.PASSWORD }}
+          key: ${{ secrets.KEY }}
           source: |
             honxinggrow-end/ruoyi-admin/target/ruoyi-admin.jar
             honxinggrow-end/ruoyi-ui/dist
@@ -52,7 +52,7 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: root
-          password: ${{ secrets.PASSWORD }}
+          key: ${{ secrets.KEY }}
           source: |
             honxinggrow-end/ruoyi-admin/target/ruoyi-admin.jar
             honxinggrow-end/ruoyi-ui/dist
