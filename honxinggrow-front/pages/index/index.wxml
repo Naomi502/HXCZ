@@ -124,7 +124,7 @@
         >
           <view class="story-card">
             <view class="card-visual">
-              <image src="{{item.coverUrl}}" mode="aspectFill" lazy-load></image>
+              <image src="{{item.coverUrl}}" mode="aspectFill" lazy-load binderror="onImageError" data-index="{{index}}"></image>
               <view class="visual-overlay"></view>
               <view class="category-tag">精选</view>
             </view>

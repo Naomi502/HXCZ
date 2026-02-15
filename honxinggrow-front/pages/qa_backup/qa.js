@@ -3,110 +3,28 @@ const app = getApp()
 
 Page({
   data: {
-    // --- UI & State Data (Merged) ---
     msgList: [],
     inputValue: '',
     loading: false,
     userInfo: {},
     scrollIntoView: '',
-    
-    // Navigation Bar (From original qa.js)
-    statusBarHeight: 44,
-    navBarHeight: 44,
-    navHeight: 88,
-    menuButtonTop: 32,
-    menuButtonHeight: 32,
-    inputBottom: 0,
-
-    // Animation & Model
+    capsuleTop: 44, // 默认胶囊高度
+    navHeight: 88, // 默认导航栏高度
+    capsuleHeight: 32, // 默认胶囊高度
     runAnim: false,
-    modelName: 'glm-4.6v-flash', // Default from root qa.js
-    
-    // TTS & Audio
-    ttsEnabled: true, // Corresponds to !isMuted in root qa.js
-    isSpeaking: false, // Controls wave animation
-
-    // Quick Questions (From original qa.js)
-    showAllQuestions: false,
-    quickQuestions: [
-      { id: 1, question: '获得各类资助的学生应当履行哪些基本义务？' },
-      { id: 2, question: '申请校内勤工助学岗位需要满足什么条件？' },
-      { id: 3, question: '奖学金的评选标准是什么？' },
-      { id: 4, question: '家庭突发变故能否中途申请资助？' }
-    ],
-    
-    // Internal State for Logic
-    isReplying: false, // From root qa.js
+    modelName: 'glm-4.6v-flash', // 默认模型名称
+    isMuted: false,
+    isReplying: false,
+    isSpeaking: false // 是否正在朗读
   },
-
-  // --- Lifecycle Methods ---
 
   onLoad() {
     this.setData({
       userInfo: app.globalData.userInfo || {}
     })
-    this.initNavBar() // Use original logic
-    this.initAudio()  // Use root logic
-    this.getAiModelName() // Use root logic
-  },
-
-  onShow() {
-    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-      this.getTabBar().setData({
-        selected: 2
-      })
-    }
-    // Update user info
-    const userInfo = app.globalData.userInfo || {}
-    const localAvatar = wx.getStorageSync('userAvatar')
-    if (localAvatar) {
-        userInfo.localAvatar = localAvatar
-    }
-    
-    // Animation logic from original qa.js
-    const appInstance = getApp()
-    if (this.animTimer) clearTimeout(this.animTimer)
-
-    if (appInstance.globalData.isTabSwitch) {
-      this.setData({ runAnim: false, userInfo }, () => {
-        this.animTimer = setTimeout(() => {
-          this.setData({ runAnim: true })
-        }, 50)
-      })
-      appInstance.globalData.isTabSwitch = false
-    } else {
-      this.setData({ runAnim: true, userInfo })
-    }
-  },
-
-  onHide() {
-    if (this.animTimer) clearTimeout(this.animTimer)
-    this.stopAllAudio() // Use root logic
-    this.setData({ runAnim: false })
-  },
-
-  onUnload() {
-    this.stopStreaming() // Use root logic
-    this.stopAllAudio() // Use root logic
-  },
-
-  // --- UI Methods ---
-
-  initNavBar() {
-    // Original qa.js logic for better UI fit
-    const sysInfo = wx.getSystemInfoSync()
-    const menuButton = wx.getMenuButtonBoundingClientRect()
-    const statusBarHeight = sysInfo.statusBarHeight
-    const navBarHeight = menuButton.height + (menuButton.top - statusBarHeight) * 2
-    const navTotalHeight = statusBarHeight + navBarHeight - 30
-    
-    this.setData({
-      statusBarHeight,
-      navBarHeight,
-      navHeight: navTotalHeight,
-      menuButtonTop: menuButton.top,
-      menuButtonHeight: menuButton.height
-    })
+    this.initAudio()
+    this.initNavBar()
+    this.getAiModelName()
   },
 
   getAiModelName() {
@@ -123,6 +41,49 @@ Page({
     })
   },
 
+  onShow() {
+    if (typeof this.getTabBar === 'function' &&
+      this.getTabBar()) {
+      this.getTabBar().setData({
+        selected: 2 // 问答在 tab list 中的索引，假设是第3个（索引2）
+      })
+    }
+    // 更新用户信息，确保头像一致
+    const userInfo = app.globalData.userInfo || {}
+    // 优先读取本地存储的头像
+    const localAvatar = wx.getStorageSync('userAvatar')
+    if (localAvatar) {
+        userInfo.localAvatar = localAvatar
+    }
+    
+    this.setData({
+      userInfo: userInfo,
+      runAnim: true
+    })
+  },
+
+  onHide() {
+    this.setData({ runAnim: false })
+  },
+
+  onUnload() {
+    this.stopStreaming()
+    this.stopAllAudio()
+  },
+
+  initNavBar() {
+    const menuButton = wx.getMenuButtonBoundingClientRect()
+    
+    // 胶囊底部到底部的间距 = 胶囊顶部到状态栏底部的间距
+    // 导航栏高度 = 胶囊底部 + 间距
+    // 这里简单处理：让标题栏高度与胶囊对齐
+    this.setData({
+      capsuleTop: menuButton.top,
+      capsuleHeight: menuButton.height,
+      navHeight: menuButton.bottom + 10 // 留一点 padding
+    })
+  },
+
   handleBack() {
     wx.navigateBack()
   },
@@ -133,50 +94,22 @@ Page({
     })
   },
 
+  toggleMute() {
+    const nextMuted = !this.data.isMuted
+    this.setData({ isMuted: nextMuted })
+    if (nextMuted) {
+      this.stopAllAudio()
+    } else {
+      this.flushTtsBuffer(true)
+      this.playNextTts()
+    }
+  },
+
   scrollToBottom() {
     this.setData({
       scrollIntoView: 'bottom-anchor'
     })
   },
-
-  toggleQuickQuestions() {
-    this.setData({ showAllQuestions: !this.data.showAllQuestions })
-  },
-
-  resetChat() {
-    wx.showModal({
-      title: '提示',
-      content: '确定要清空对话记录吗？',
-      success: (res) => {
-        if (res.confirm) {
-          this.stopAllAudio()
-          this.stopStreaming()
-          this.setData({
-            msgList: [],
-            inputValue: '',
-            loading: false,
-            isSpeaking: false,
-            isReplying: false
-          })
-        }
-      }
-    })
-  },
-
-  simpleMarkdownToHtml(text) {
-    if (!text) return ''
-    let html = text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.+?)\*/g, '<em>$1</em>')
-      .replace(/`(.+?)`/g, '<code>$1</code>')
-      .replace(/\n/g, '<br/>')
-    return html
-  },
-
-  // --- Audio / TTS Logic (From Root qa.js) ---
 
   initAudio() {
     this.ttsQueue = []
@@ -186,7 +119,7 @@ Page({
     this.streamCharCount = 0
     this.audioContext = wx.createInnerAudioContext()
     if (this.audioContext.setObeyMuteSwitch) {
-      this.audioContext.setObeyMuteSwitch(false)
+      this.audioContext.setObeyMuteSwitch(false) // 即使静音模式也播放声音
     }
     this.audioContext.onEnded(() => {
       this.ttsPlaying = false
@@ -214,37 +147,22 @@ Page({
     this.setData({ isSpeaking: false })
   },
 
-  toggleTTS() {
-    const nextEnabled = !this.data.ttsEnabled
-    this.setData({ ttsEnabled: nextEnabled })
-    
-    if (!nextEnabled) {
-      this.stopAllAudio()
-      this.pendingTtsText = ''
-    } else {
-      this.playNextTts()
-    }
-    
-    wx.showToast({
-      title: nextEnabled ? '语音已开启' : '语音已关闭',
-      icon: 'none'
-    })
-  },
-
   enqueueTts(text) {
     const cleaned = (text || '').trim()
-    if (!cleaned || !this.data.ttsEnabled) return
+    if (!cleaned || this.data.isMuted) return
     this.ttsQueue.push(cleaned)
     this.playNextTts()
   },
 
   playNextTts() {
-    if (this.ttsPlaying || !this.data.ttsEnabled) return
+    if (this.ttsPlaying || this.data.isMuted) return
     const nextText = this.ttsQueue.shift()
     if (!nextText) return
     this.ttsPlaying = true
     this.setData({ isSpeaking: true })
     
+    // 统一使用 request.request。
+    // 在生产环境下(useCloud: true)，request.request 会自动调用 callApi 云函数转发到后端 /hx/ai/tts
     request.request({
       url: '/hx/ai/tts',
       method: 'POST',
@@ -253,12 +171,13 @@ Page({
       },
       hideLoading: true
     }).then(res => {
-      if (!this.data.ttsEnabled) {
+      if (this.data.isMuted) {
         this.ttsPlaying = false
         this.setData({ isSpeaking: false })
         return
       }
       
+      // 注意：后端返回的数据结构可能是 res.data.audioBase64
       const audioBase64 = res.data?.audioBase64 || res.audioBase64
       const audioUrl = res.data?.audioUrl || res.audioUrl
       
@@ -280,7 +199,7 @@ Page({
   },
 
   handleTtsSuccess(audioBase64) {
-    if (!this.data.ttsEnabled) {
+    if (this.data.isMuted) {
       this.ttsPlaying = false
       this.setData({ isSpeaking: false })
       return
@@ -292,7 +211,7 @@ Page({
       data: audioBase64,
       encoding: 'base64',
       success: () => {
-        if (!this.data.ttsEnabled) {
+        if (this.data.isMuted) {
           this.ttsPlaying = false
           this.setData({ isSpeaking: false })
           return
@@ -313,8 +232,32 @@ Page({
     this.playNextTts()
   },
 
-  // --- Chat Logic (From Root qa.js) ---
+  flushTtsBuffer(force) {
+    if (this.data.isMuted) {
+      this.pendingTtsText = ''
+      return
+    }
+    const text = this.pendingTtsText || ''
+    if (!text) return
+    if (force) {
+      this.pendingTtsText = ''
+      this.enqueueTts(text)
+      return
+    }
+    const regex = /[^。！？!?；;]+[。！？!?；;]+/g
+    let match
+    let lastIndex = 0
+    while ((match = regex.exec(text)) !== null) {
+      const segment = match[0]
+      if (segment && segment.trim().length >= 4) {
+        this.enqueueTts(segment)
+      }
+      lastIndex = regex.lastIndex
+    }
+    this.pendingTtsText = text.slice(lastIndex)
+  },
 
+  // 打字机效果函数
   typeWriter(fullText, msgId) {
     const that = this
     let i = 0
@@ -323,34 +266,34 @@ Page({
     
     if (targetMsgIndex === -1) return
 
+    // 初始清空内容
     msgList[targetMsgIndex].content = ''
-    msgList[targetMsgIndex].contentHtml = ''
     
+    // 设置正在回复状态，用于控制“中断”逻辑
     this.setData({ 
         msgList,
-        isReplying: true 
+        isReplying: true // 标记为正在打字
     })
 
+    // 定时器逐字显示
+    // 将 timer 存储在实例上，以便中断
     this.typeWriterTimer = setInterval(() => {
       if (i < fullText.length) {
         const char = fullText.charAt(i)
-        const currentContent = this.data.msgList[targetMsgIndex].content + char
-        const keyContent = `msgList[${targetMsgIndex}].content`
-        const keyHtml = `msgList[${targetMsgIndex}].contentHtml`
-        
+        const key = `msgList[${targetMsgIndex}].content`
         this.setData({
-          [keyContent]: currentContent,
-          [keyHtml]: this.simpleMarkdownToHtml(currentContent)
+          [key]: this.data.msgList[targetMsgIndex].content + char
         })
         i++
+        // 每输出几个字就滚动到底部，保持视觉跟随
         if (i % 5 === 0) that.scrollToBottom()
       } else {
         clearInterval(this.typeWriterTimer)
         this.typeWriterTimer = null
-        this.setData({ isReplying: false })
-        that.scrollToBottom()
+        this.setData({ isReplying: false }) // 打字结束
+        that.scrollToBottom() // 结束后再次滚动到底部
       }
-    }, 30)
+    }, 30) // 打字速度：30ms/字
   },
 
   decodeChunk(buffer) {
@@ -393,6 +336,7 @@ Page({
       },
       fail: (err) => {
         console.warn('Stream request failed:', err)
+        // 在生产环境，wx.request 到 IP 地址通常会失败，直接回退到非流式（云函数）
         this.fallbackToNonStream(question)
       }
     })
@@ -454,27 +398,19 @@ Page({
     if (index === undefined || index < 0) return
     const current = this.data.msgList[index]?.content || ''
     const next = current + delta
-    const keyContent = `msgList[${index}].content`
-    const keyHtml = `msgList[${index}].contentHtml`
-    
-    this.setData({ 
-        [keyContent]: next, 
-        [keyHtml]: this.simpleMarkdownToHtml(next),
-        loading: false 
-    })
+    const key = `msgList[${index}].content`
+    this.setData({ [key]: next, loading: false })
     this.streamCharCount += delta.length
     this.pendingTtsText += delta
     if (this.streamCharCount % 12 === 0) {
       this.scrollToBottom()
     }
+    this.flushTtsBuffer(false)
   },
 
   finishStream() {
     this.setData({ isReplying: false, loading: false })
-    if (this.pendingTtsText && this.pendingTtsText.trim()) {
-      this.enqueueTts(this.pendingTtsText.trim())
-      this.pendingTtsText = ''
-    }
+    this.flushTtsBuffer(true)
     this.scrollToBottom()
   },
 
@@ -483,8 +419,7 @@ Page({
     const errorMsg = {
       id: Date.now() + 1,
       role: 'ai',
-      content: message || '网络开小差了，请稍后再试。',
-      contentHtml: this.simpleMarkdownToHtml(message || '网络开小差了，请稍后再试。')
+      content: message || '网络开小差了，请稍后再试。'
     }
     const newMsgList = this.data.msgList
     newMsgList.push(errorMsg)
@@ -511,18 +446,8 @@ Page({
     })
   },
 
-  onQuickQuestion(e) {
-    const question = e.currentTarget.dataset.question
-    this.doSend(question)
-  },
-
   onSend() {
-    this.doSend(this.data.inputValue)
-  },
-
-  doSend(content) {
-    content = (content || '').trim()
-    
+    // 1. 如果正在打字（isReplying），点击发送键视为“中断”
     if (this.data.isReplying) {
         this.stopStreaming()
         this.stopAllAudio()
@@ -532,13 +457,16 @@ Page({
         })
         wx.showToast({ title: '已中断回答', icon: 'none' })
         
-        if (!content) {
+        // 中断后，如果输入框为空，就停止即可；如果输入框有内容，继续往下走发送新请求
+        if (!this.data.inputValue.trim()) {
             return
         }
     }
 
+    const content = this.data.inputValue.trim()
     if (!content || this.data.loading) return
 
+    // 2. Add user message
     const msgList = this.data.msgList
     const userMsg = {
       id: Date.now(),
@@ -553,6 +481,7 @@ Page({
       loading: true
     })
     
+    // 延迟一小会儿滚动，确保视图渲染完成
     setTimeout(() => {
       this.scrollToBottom()
     }, 100)
@@ -561,8 +490,7 @@ Page({
     const aiMsg = {
       id: aiMsgId,
       role: 'ai',
-      content: '',
-      contentHtml: ''
+      content: ''
     }
     const newMsgList = this.data.msgList
     newMsgList.push(aiMsg)
@@ -572,10 +500,11 @@ Page({
     })
     this.currentAiMsgIndex = newMsgList.length - 1
     
+    // 生产环境/体验版走云函数转发（不支持流式），开发环境走本地连接（支持流式）
     if (app.globalData.useCloud) {
       this.fallbackToNonStream(content)
     } else {
-      this.startStream(content)
+      this.startStream(content, aiMsgId)
     }
   }
 })

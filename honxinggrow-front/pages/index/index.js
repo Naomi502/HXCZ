@@ -185,5 +185,24 @@ Page({
     wx.navigateTo({
       url: `/pages/detail/detail?id=${id}`
     })
+  },
+
+  onImageError(e) {
+    const index = e.currentTarget.dataset.index
+    const list = this.data.filteredStories
+    const item = list[index]
+    if (item) {
+      // Update filteredStories directly to reflect change immediately
+      const key = `filteredStories[${index}].coverUrl`
+      this.setData({
+        [key]: '/images/activity_default.jpg'
+      })
+      
+      // Also update source list to prevent reversion on search clear
+      const sourceIndex = this.data.storyList.findIndex(s => s.id === item.id)
+      if (sourceIndex !== -1) {
+        this.data.storyList[sourceIndex].coverUrl = '/images/activity_default.jpg'
+      }
+    }
   }
 })

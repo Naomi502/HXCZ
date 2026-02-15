@@ -1,127 +1,178 @@
-<!-- AI Chat Page -->
-<view class="page {{runAnim ? 'animate-entry' : 'anim-reset'}}">
-  <!-- 顶部背景 -->
-  <view class="nebula-bg">
-    <view class="blob blob-1"></view>
-    <view class="blob blob-2"></view>
-  </view>
-
-  <!-- 沉浸式导航栏 -->
-  <view class="header-bar" style="padding-top: {{capsuleTop}}px; height: {{navHeight}}px;">
-    <!-- 仅在非 TabBar 页面显示返回按钮，如果是 Tab 页可以隐藏 -->
-    <view class="header-content" style="height: {{capsuleHeight}}px;">
+<!-- AI 问答页面 -->
+<view class="qa-page {{runAnim ? 'animate-entry' : 'anim-reset'}}">
+  <!-- 顶部导航栏 - 沉浸式 -->
+  <view class="nav-bar animate-slide-down">
+    <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
+    <view class="nav-content" style="height: {{navBarHeight}}px;">
+      <view class="nav-left">
         <view class="title-row">
-            <text class="page-title">意小芯</text>
-            <view class="speaker-icon" bindtap="toggleMute">
-                <text>{{isMuted ? '🔇' : '🔊'}}</text>
-            </view>
+          <text class="nav-title">e小芯</text>
+          <view class="online-badge {{loading ? 'thinking' : ''}}">
+            <view class="pulse-dot"></view>
+            <text class="online-text">{{loading ? '思考中' : '在线'}}</text>
+          </view>
+          <!-- 声波动画 -->
+          <view class="sound-wave" wx:if="{{isSpeaking}}">
+            <view class="wave-bar"></view>
+            <view class="wave-bar"></view>
+            <view class="wave-bar"></view>
+            <view class="wave-bar"></view>
+            <view class="wave-bar"></view>
+          </view>
         </view>
-        <view class="subtitle-row">
-            <text class="page-disclaimer">由 {{modelName || 'AI'}} 提供服务</text>
-            <!-- 增加声纹动画 -->
-            <view class="voice-wave" wx:if="{{isSpeaking}}">
-                <view class="bar bar1"></view>
-                <view class="bar bar2"></view>
-                <view class="bar bar3"></view>
-                <view class="bar bar4"></view>
-                <view class="bar bar5"></view>
+        <text class="nav-subtitle">{{modelName}}</text>
+      </view>
+      <view class="nav-actions" style="height: {{menuButtonHeight}}px;">
+        <view class="action-btn tts-btn {{ttsEnabled ? 'active' : ''}}" bindtap="toggleTTS">
+          <view class="btn-icon">
+            <view class="icon-speaker" wx:if="{{ttsEnabled}}">
+              <view class="speaker-body"></view>
+              <view class="speaker-waves">
+                <view class="wave-line"></view>
+                <view class="wave-line"></view>
+                <view class="wave-line"></view>
+              </view>
             </view>
+            <view class="icon-muted" wx:else>
+              <view class="speaker-cone"></view>
+              <view class="speaker-waves-muted">
+                <view class="muted-wave"></view>
+                <view class="muted-wave"></view>
+              </view>
+              <view class="mute-cross">
+                <view class="cross-line"></view>
+                <view class="cross-line"></view>
+              </view>
+            </view>
+          </view>
         </view>
+        <view class="action-btn refresh-btn" bindtap="resetChat">
+          <view class="btn-icon">
+            <view class="refresh-icon">
+              <view class="refresh-arrow"></view>
+              <view class="refresh-circle"></view>
+            </view>
+          </view>
+        </view>
+      </view>
     </view>
   </view>
 
-  <!-- 数字人悬浮窗 (位于导航栏下方) -->
-  <view class="digital-human-container" style="top: {{navHeight}}px;">
-      <!-- 极简光晕背景 -->
-      <view class="tech-glow-bg"></view>
+  <!-- 数字人区域 -->
+  <view class="digital-human-section animate-pop" style="margin-top: {{navHeight}}px; animation-delay: 0.1s;">
+    <view class="human-wrapper">
+      <!-- 数字人背后的遮罩/光晕 -->
+      <view class="human-backdrop"></view>
       
-      <!-- 底部全息投影底座与波纹 -->
-      <view class="hologram-base">
-          <view class="energy-ripple"></view>
-      </view>
-      
-      <!-- 悬浮粒子 -->
-      <view class="particles-container">
-          <view class="particle p1"></view>
-          <view class="particle p2"></view>
-          <view class="particle p3"></view>
-          <view class="particle p4"></view>
-      </view>
-      
-      <!-- 静态图片 -->
+      <!-- 数字人图片 -->
       <image 
-        class="digital-human-img"
-        src="/images/speak.png" 
+        class="human-avatar {{isSpeaking ? 'speaking' : ''}} {{loading ? 'thinking' : ''}}" 
+        src="/images/exx.gif" 
         mode="aspectFit"
-      ></image>
-      <!-- 前景覆盖层 -->
-      <view class="tech-scan-line"></view>
-  </view>
-  
-  <!-- 内容渐隐遮罩 (覆盖整个顶部，作为数字人的背景板) -->
-  <view class="content-gradient-mask" style="height: {{navHeight + 340}}px;"></view>
+      />
 
-  <view class="chat-container">
-    <scroll-view scroll-y class="chat-list" scroll-into-view="{{scrollIntoView}}" scroll-with-animation>
-      <!-- 顶部占位块，避让数字人 -->
-      <view style="height: {{navHeight + 280}}px; width: 100%; flex-shrink: 0;"></view>
-      
-      <!-- Welcome Message -->
-      <view class="message left" id="msg-0">
-        <!-- 移除 AI 头像 -->
-        <view class="content">
-          <text user-select>你好！我是e小芯。有什么可以帮你的吗？\n你可以问我关于奖学金、活动积分、请假流程等问题。\n目前因为域名业务问题，暂时不解决朗读问题</text>
+      <!-- 声波动画 - 已移动到标题栏 -->
+
+    </view>
+  </view>
+
+  <!-- 对话区域 -->
+  <view class="chat-section animate-fade-in" style="animation-delay: 0.2s;">
+    <!-- 顶部渐变隐藏遮罩 -->
+    <view class="chat-fade-mask"></view>
+
+    <scroll-view 
+      scroll-y 
+      class="chat-scroll" 
+      scroll-into-view="{{scrollIntoView}}" 
+      scroll-with-animation
+     style="height: 981rpx; display: block; box-sizing: border-box">
+      <!-- 欢迎消息 -->
+      <view class="message-item ai-message animate-slide-up" style="animation-delay: 0.3s;">
+        <view class="message-bubble" style="position: relative; left: 0rpx; top: 19rpx">
+          <text class="message-text">你好呀！同学\n我是e小芯，有什么需要解答的吗？\n你可以问我关于奖学金、活动积分、请假流程等问题。</text>
+          
+          <!-- 快速问题 -->
+          <view class="quick-questions" wx:if="{{quickQuestions.length > 0}}">
+            <view class="quick-title">💡 常见问题</view>
+            <view class="quick-list">
+              <block wx:for="{{quickQuestions}}" wx:key="id">
+                <view 
+                  class="quick-item {{index < 2 ? 'animate-slide-up' : ''}}" 
+                  wx:if="{{index < 2 || showAllQuestions}}"
+                  bindtap="onQuickQuestion"
+                  data-question="{{item.question}}"
+                  style="{{index < 2 ? 'animation-delay: ' + (0.4 + index * 0.1) + 's;' : ''}}"
+                >
+                  {{item.question}}
+                </view>
+              </block>
+            </view>
+            <view class="quick-toggle" bindtap="toggleQuickQuestions" wx:if="{{quickQuestions.length > 2}}">
+              {{showAllQuestions ? '收起 ▲' : '展开更多 ▼'}}
+            </view>
+          </view>
         </view>
       </view>
 
-      <!-- Chat History -->
+      <!-- 对话历史 -->
       <block wx:for="{{msgList}}" wx:key="id">
-        <view class="message {{item.role === 'user' ? 'right' : 'left'}}" id="msg-{{item.id}}">
-          <block wx:if="{{item.role === 'user'}}">
-             <!-- 用户头像：优先显示本地缓存头像，其次微信头像，最后文字头像 -->
-             <view class="avatar-container" style="margin-left: 20rpx;">
-                <image wx:if="{{userInfo.localAvatar || userInfo.avatarUrl}}" class="avatar" src="{{userInfo.localAvatar || userInfo.avatarUrl}}" mode="aspectFill"></image>
-                <view wx:else class="avatar-circle-small">
-                    <text>{{userInfo.nickName[0] || userInfo.userName[0] || '我'}}</text>
-                </view>
-             </view>
-          </block>
-          <block wx:else>
-             <!-- 移除 AI 头像 -->
-          </block>
+        <view class="message-item {{item.role === 'user' ? 'user-message' : 'ai-message'}}">
+          <!-- 用户头像 -->
+          <view class="avatar" wx:if="{{item.role === 'user'}}">
+            <image 
+              wx:if="{{userInfo.localAvatar || userInfo.avatarUrl}}" 
+              class="avatar-img" 
+              src="{{userInfo.localAvatar || userInfo.avatarUrl}}" 
+              mode="aspectFill"
+            />
+            <view wx:else class="avatar-text">
+              {{userInfo.nickName[0] || userInfo.userName[0] || '我'}}
+            </view>
+          </view>
 
-          <view class="content">
-            <text user-select>{{item.content}}</text>
+          <!-- 消息气泡 -->
+          <view class="message-bubble">
+            <!-- AI消息使用rich-text渲染Markdown -->
+            <rich-text class="message-text" wx:if="{{item.role === 'ai' && item.content}}" nodes="{{item.contentHtml || item.content}}"></rich-text>
+            <!-- 用户消息使用text -->
+            <text class="message-text" wx:elif="{{item.role === 'user' && item.content}}" user-select>{{item.content}}</text>
+            <view class="loading-dots" wx:else>
+              <view class="dot"></view>
+              <view class="dot"></view>
+              <view class="dot"></view>
+            </view>
           </view>
         </view>
       </block>
 
-      <!-- Loading Indicator -->
-      <view class="message left" wx:if="{{loading}}">
-        <!-- 移除 AI 头像 -->
-        <view class="content loading">
-          <view class="dot"></view><view class="dot"></view><view class="dot"></view>
-        </view>
-      </view>
-      
-      <!-- Anchor for scroll to bottom -->
-      <view id="bottom-anchor" style="height: 240rpx;"></view>
+      <!-- 底部锚点 -->
+      <view id="bottom-anchor" style="height: 1rpx;"></view>
     </scroll-view>
   </view>
 
-  <!-- Input Area (Fixed Position) -->
-  <view class="input-area-wrapper {{runAnim ? 'slide-up-anim' : ''}}">
-    <view class="input-area">
-      <view class="input-box-container">
-        <input class="input-box" 
-               value="{{inputValue}}" 
-               bindinput="onInput" 
-               bindconfirm="onSend" 
-               confirm-type="send"
-               placeholder="请输入你的问题..." 
-               placeholder-class="input-placeholder"/>
+  <!-- 输入区域 -->
+  <view class="input-section animate-slide-up" style="animation-delay: 0.5s;">
+    <!-- 顶部渐变遮罩 -->
+    <view class="input-fade-mask"></view>
+    
+    <view class="input-container">
+      <view class="input-wrapper">
+        <input 
+          class="input-box"
+          value="{{inputValue}}"
+          bindinput="onInput"
+          bindconfirm="onSend"
+          confirm-type="send"
+          placeholder="请输入你的问题..."
+          placeholder-class="input-placeholder"
+        />
       </view>
-      <button class="send-btn" bindtap="onSend" disabled="{{!inputValue || loading}}">
+      <button 
+        class="send-btn {{inputValue && !loading ? 'active' : ''}}" 
+        bindtap="onSend" 
+        disabled="{{!inputValue || loading}}"
+      >
         <image class="send-icon" src="/images/send-plane.png" mode="aspectFit" />
       </button>
     </view>

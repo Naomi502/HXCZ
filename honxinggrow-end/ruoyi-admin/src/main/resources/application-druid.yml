@@ -6,9 +6,9 @@ spring:
         druid:
             # 主库数据源
             master:
-                url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:yzpc}?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
-                username: ${MYSQL_USER:yzpc}
-                password: ${MYSQL_PASSWORD:ZnYAtKHC4KEfJJcW}
+                url: jdbc:mysql://59.110.229.252:3306/yzpc?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+                username: yzpc
+                password: ZnYAtKHC4KEfJJcW
             # 从库数据源
             slave:
                 # 从数据源开关/默认关闭

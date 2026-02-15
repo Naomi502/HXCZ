@@ -141,7 +141,7 @@ public class HxAiService {
                 result.put("error", jsonResponse.getJSONObject("error").getString("message"));
                 return result;
             }
-            result.put("error", "TTS 响应为空");
+            result.put("error", "TTS 响应为空. Response: " + response);
             return result;
         } catch (Exception e) {
             log.error("Call TTS API failed", e);

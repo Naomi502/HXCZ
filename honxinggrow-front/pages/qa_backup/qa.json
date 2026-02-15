@@ -1,0 +1,8 @@
+{
+  "navigationStyle": "custom",
+  "navigationBarTitleText": "问答",
+  "enablePullDownRefresh": false,
+  "usingComponents": {},
+  "backgroundTextStyle": "light",
+  "backgroundColor": "#FF4B4B"
+}
