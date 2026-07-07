@@ -21,9 +21,7 @@ Page({
     const app = getApp()
     const isLoggedIn = !!app.globalData.token
     this.setData({ isLoggedIn })
-    if (isLoggedIn) {
-      this.loadStories()
-    }
+    this.loadStories()
   },
   onShow() {
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
@@ -51,8 +49,8 @@ Page({
     const isLoggedIn = !!app.globalData.token
     if (isLoggedIn !== this.data.isLoggedIn) {
       this.setData({ isLoggedIn })
-      // 如果变成了已登录，且之前没加载过，则加载
-      if (isLoggedIn && !this.data.hasLoaded) {
+      // 登录状态变化时重新加载
+      if (!this.data.hasLoaded) {
         this.loadStories()
       }
     }
@@ -101,18 +99,9 @@ Page({
     this.hideMsgTip()
   },
   onPullDownRefresh() {
-    if (!this.data.isLoggedIn) {
-      wx.stopPullDownRefresh()
-      return
-    }
     this.loadStories(() => wx.stopPullDownRefresh())
   },
   loadStories(callback) {
-    if (!this.data.isLoggedIn) {
-      this.setData({ loading: false })
-      if (typeof callback === 'function') callback()
-      return
-    }
     this.setData({ loading: true })
     request({
       url: '/app/story/list',
@@ -178,10 +167,6 @@ Page({
   },
   viewDetail(e) {
     const id = e.currentTarget.dataset.id
-    const app = getApp()
-    if (!app.ensureLogin()) {
-      return
-    }
     wx.navigateTo({
       url: `/pages/detail/detail?id=${id}`
     })

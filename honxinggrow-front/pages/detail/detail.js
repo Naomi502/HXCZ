@@ -11,7 +11,8 @@ Page({
     pageAnim: null,
     contentBlocks: [],
     imageList: [],
-    capsuleTop: 24
+    capsuleTop: 24,
+    isLoggedIn: false
   },
   onLoad(options) {
     const { id } = options
@@ -33,7 +34,8 @@ Page({
   },
   onShow() {
     const app = getApp()
-    if (!app.ensureLogin()) return
+    const isLoggedIn = !!app.globalData.token
+    this.setData({ isLoggedIn })
     this.animateIn()
     this.loadDetail()
   },
@@ -81,6 +83,8 @@ Page({
     })
   },
   handleLike() {
+    const app = getApp()
+    if (!app.ensureLogin()) return
     const { id, hasLiked } = this.data
     if (hasLiked) {
       wx.showToast({

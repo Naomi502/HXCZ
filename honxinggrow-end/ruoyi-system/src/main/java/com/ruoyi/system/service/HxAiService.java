@@ -46,6 +46,8 @@ public class HxAiService {
     private static final String KEY_PROMPT_TEMPLATE = "hx.ai.prompt.template";
     private static final String KEY_TTS_MODEL = "hx.ai.tts.model";
     private static final String KEY_TTS_VOICE = "hx.ai.tts.voice";
+    private static final String KEY_TTS_REALTIME_MODEL = "hx.ai.tts.realtime.model";
+    private static final String KEY_TTS_REALTIME_VOICE = "hx.ai.tts.realtime.voice";
 
     // Default Prompt Template
     private static final String DEFAULT_PROMPT_TEMPLATE = 
@@ -502,6 +504,8 @@ public class HxAiService {
         config.put("promptTemplate", configService.selectConfigByKey(KEY_PROMPT_TEMPLATE));
         config.put("ttsModel", configService.selectConfigByKey(KEY_TTS_MODEL));
         config.put("ttsVoice", configService.selectConfigByKey(KEY_TTS_VOICE));
+        config.put("ttsRealtimeModel", configService.selectConfigByKey(KEY_TTS_REALTIME_MODEL));
+        config.put("ttsRealtimeVoice", configService.selectConfigByKey(KEY_TTS_REALTIME_VOICE));
         return config;
     }
 
@@ -510,6 +514,23 @@ public class HxAiService {
      */
     public String getModelName() {
         return configService.selectConfigByKey(KEY_MODEL);
+    }
+
+    /**
+     * Get API Key for TTS Realtime
+     */
+    public String getApiKey() {
+        return configService.selectConfigByKey(KEY_API_KEY);
+    }
+
+    public String getTtsRealtimeModel() {
+        String model = configService.selectConfigByKey(KEY_TTS_REALTIME_MODEL);
+        return StringUtils.isEmpty(model) ? "qwen3-tts-flash-realtime" : model;
+    }
+
+    public String getTtsRealtimeVoice() {
+        String voice = configService.selectConfigByKey(KEY_TTS_REALTIME_VOICE);
+        return StringUtils.isEmpty(voice) ? "Cherry" : voice;
     }
 
     /**
@@ -523,6 +544,8 @@ public class HxAiService {
         updateConfigValue(KEY_PROMPT_TEMPLATE, config.get("promptTemplate"));
         updateConfigValue(KEY_TTS_MODEL, config.get("ttsModel"));
         updateConfigValue(KEY_TTS_VOICE, config.get("ttsVoice"));
+        updateConfigValue(KEY_TTS_REALTIME_MODEL, config.get("ttsRealtimeModel"));
+        updateConfigValue(KEY_TTS_REALTIME_VOICE, config.get("ttsRealtimeVoice"));
     }
 
     private void updateConfigValue(String key, String value) {

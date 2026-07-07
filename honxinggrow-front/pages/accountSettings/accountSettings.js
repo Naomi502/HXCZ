@@ -2,12 +2,32 @@ const { request } = require('../../utils/request')
 
 Page({
   data: {
+    capsuleTop: 44, // 默认胶囊位置
     oldPassword: '',
     newPassword: '',
     confirmPassword: '',
     submitting: false,
     wechatBound: false,
     bindingWechat: false
+  },
+
+  onLoad() {
+    this.initHeader()
+  },
+
+  initHeader() {
+    try {
+      const capsule = wx.getMenuButtonBoundingClientRect()
+      if (capsule) {
+        this.setData({ capsuleTop: capsule.top })
+      }
+    } catch (error) {
+      console.warn('获取胶囊按钮位置失败', error)
+    }
+  },
+
+  handleBack() {
+    wx.navigateBack({ delta: 1 })
   },
 
   onShow() {

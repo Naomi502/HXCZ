@@ -1,50 +1,96 @@
 <view class="page">
-  <view class="container">
-    <view class="header">
-      <view class="title">修改密码</view>
-      <view class="subtitle">为了保障您的账户安全，请定期更换密码</view>
-    </view>
-    <view class="card bind-card">
-      <view class="bind-header">
-        <view>
-          <view class="bind-title">微信快捷登录</view>
-          <view class="bind-desc">修改密码后点击下方按钮绑定，可使用微信快捷登录。</view>
-        </view>
-        <view class="bind-status {{wechatBound ? 'on' : 'off'}}">
-          {{wechatBound ? '已绑定' : '未绑定'}}
-        </view>
-      </view>
-      <button class="bind-btn" hover-class="bind-btn-hover" loading="{{bindingWechat}}" disabled="{{wechatBound}}" bindtap="handleBindWechat">
-        {{wechatBound ? '已完成绑定' : '绑定微信'}}
-      </button>
-    </view>
-    <view class="card">
-      <!-- 提示条 -->
-      <view class="notice-bar">
-        <text class="notice-icon">ⓘ</text>
-        <text>首次登录请先修改默认密码，如需调整其他信息请联系学院老师。</text>
-      </view>
+  <!-- 顶部背景 -->
+  <view class="nebula-bg">
+    <view class="blob blob-1"></view>
+    <view class="blob blob-2"></view>
+  </view>
 
-      <view class="form">
-        <view class="input-group">
-          <view class="input-label">旧密码</view>
-          <input class="input" password placeholder="请输入当前密码" placeholder-class="input-placeholder" value="{{oldPassword}}" bindinput="onOldPwdInput" />
+  <!-- 顶部导航栏 -->
+  <view class="header-bar">
+    <view class="back-btn" style="top: {{capsuleTop}}px;" bindtap="handleBack">
+      <text class="back-arrow">‹</text>
+    </view>
+
+    <view class="header-left">
+      <text class="page-title">账号设置</text>
+      <text class="page-subtitle">管理您的账户安全与绑定</text>
+    </view>
+  </view>
+
+  <!-- 内容区域 -->
+  <scroll-view class="scroll-container" scroll-y enable-back-to-top>
+    <view class="content-wrapper">
+      
+      <!-- 微信绑定卡片 -->
+      <view class="settings-card animate-slide-up" style="animation-delay: 0.1s">
+        <view class="card-header">
+          <view class="icon-box green">
+            <text>🔗</text>
+          </view>
+          <view class="header-content">
+            <view class="card-title-row">
+              <text class="card-title">微信快捷登录</text>
+              <view class="status-badge {{wechatBound ? 'success' : 'warning'}}">
+                {{wechatBound ? '已绑定' : '未绑定'}}
+              </view>
+            </view>
+            <text class="card-desc">绑定后可使用微信一键登录</text>
+          </view>
         </view>
         
-        <view class="input-group">
-          <view class="input-label">新密码</view>
-          <input class="input" password placeholder="请输入新密码（至少6位）" placeholder-class="input-placeholder" value="{{newPassword}}" bindinput="onNewPwdInput" />
+        <view class="card-body">
+          <button class="action-btn {{wechatBound ? 'disabled' : 'primary'}}" 
+                  hover-class="btn-hover" 
+                  loading="{{bindingWechat}}" 
+                  disabled="{{wechatBound}}" 
+                  bindtap="handleBindWechat">
+            {{wechatBound ? '已完成绑定' : '立即绑定微信'}}
+          </button>
         </view>
-
-        <view class="input-group">
-          <view class="input-label">确认密码</view>
-          <input class="input" password placeholder="请再次输入新密码" placeholder-class="input-placeholder" value="{{confirmPassword}}" bindinput="onConfirmPwdInput" />
-        </view>
-
-        <button class="submit-btn" hover-class="submit-btn-hover" loading="{{submitting}}" bindtap="handleSubmit">确认修改</button>
       </view>
+
+      <!-- 修改密码卡片 -->
+      <view class="settings-card animate-slide-up" style="animation-delay: 0.2s">
+        <view class="card-header">
+          <view class="icon-box blue">
+            <text>🔒</text>
+          </view>
+          <view class="header-content">
+            <text class="card-title">修改登录密码</text>
+            <text class="card-desc">定期修改密码可以保护账号安全</text>
+          </view>
+        </view>
+
+        <view class="card-body">
+          <!-- 提示条 -->
+          <view class="notice-bar">
+            <text class="notice-icon">ⓘ</text>
+            <text>首次登录请先修改默认密码，如需调整其他信息请联系学院老师。</text>
+          </view>
+
+          <view class="form-group">
+            <view class="input-item">
+              <text class="input-label">旧密码</text>
+              <input class="input-field" password placeholder="请输入当前密码" placeholder-class="input-placeholder" value="{{oldPassword}}" bindinput="onOldPwdInput" />
+            </view>
+            
+            <view class="input-item">
+              <text class="input-label">新密码</text>
+              <input class="input-field" password placeholder="请输入新密码（至少6位）" placeholder-class="input-placeholder" value="{{newPassword}}" bindinput="onNewPwdInput" />
+            </view>
+
+            <view class="input-item">
+              <text class="input-label">确认密码</text>
+              <input class="input-field" password placeholder="请再次输入新密码" placeholder-class="input-placeholder" value="{{confirmPassword}}" bindinput="onConfirmPwdInput" />
+            </view>
+
+            <button class="submit-btn" hover-class="btn-hover" loading="{{submitting}}" bindtap="handleSubmit">确认修改</button>
+          </view>
+        </view>
+      </view>
+
+      <!-- 底部垫高 -->
+      <view style="height: 40px;"></view>
     </view>
-
-
-  </view>
+  </scroll-view>
 </view>

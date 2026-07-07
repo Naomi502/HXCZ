@@ -1,104 +1,66 @@
 <!-- AI 问答页面 -->
 <view class="qa-page {{runAnim ? 'animate-entry' : 'anim-reset'}}">
-  <!-- 顶部导航栏 - 沉浸式 -->
-  <view class="nav-bar animate-slide-down">
-    <view class="status-bar" style="height: {{statusBarHeight}}px;"></view>
-    <view class="nav-content" style="height: {{navBarHeight}}px;">
-      <view class="nav-left">
-        <view class="title-row">
-          <text class="nav-title">e小芯</text>
-          <view class="online-badge {{loading ? 'thinking' : ''}}">
-            <view class="pulse-dot"></view>
-            <text class="online-text">{{loading ? '思考中' : '在线'}}</text>
-          </view>
-          <!-- 声波动画 -->
-          <view class="sound-wave" wx:if="{{isSpeaking}}">
-            <view class="wave-bar"></view>
-            <view class="wave-bar"></view>
-            <view class="wave-bar"></view>
-            <view class="wave-bar"></view>
-            <view class="wave-bar"></view>
-          </view>
-        </view>
-        <text class="nav-subtitle">{{modelName}}</text>
+  <!-- 顶部胶囊导航栏 -->
+  <view class="header-card animate-slide-down" style="--status-bar-height: {{statusBarHeight}}px;">
+    <view class="header-capsule">
+      <!-- 左侧：头像 -->
+      <view class="header-avatar-wrap">
+        <image class="header-avatar {{loading ? 'thinking' : ''}}" src="/images/exx.gif" mode="aspectFit" />
       </view>
-      <view class="nav-actions" style="height: {{menuButtonHeight}}px;">
-        <view class="action-btn tts-btn {{ttsEnabled ? 'active' : ''}}" bindtap="toggleTTS">
-          <view class="btn-icon">
-            <view class="icon-speaker" wx:if="{{ttsEnabled}}">
-              <view class="speaker-body"></view>
-              <view class="speaker-waves">
-                <view class="wave-line"></view>
-                <view class="wave-line"></view>
-                <view class="wave-line"></view>
-              </view>
-            </view>
-            <view class="icon-muted" wx:else>
-              <view class="speaker-cone"></view>
-              <view class="speaker-waves-muted">
-                <view class="muted-wave"></view>
-                <view class="muted-wave"></view>
-              </view>
-              <view class="mute-cross">
-                <view class="cross-line"></view>
-                <view class="cross-line"></view>
-              </view>
-            </view>
+
+      <!-- 中间：标题和副标题 -->
+      <view class="header-info">
+        <view class="header-title-row">
+          <text class="header-title">e小芯</text>
+          <view class="header-status">
+            <view class="status-dot {{isOnline ? 'online' : 'offline'}}"></view>
+            <text class="status-text">{{isOnline ? '在线' : '离线'}}</text>
           </view>
         </view>
-        <view class="action-btn refresh-btn" bindtap="resetChat">
-          <view class="btn-icon">
-            <view class="refresh-icon">
-              <view class="refresh-arrow"></view>
-              <view class="refresh-circle"></view>
-            </view>
+        <text class="header-model">Qwen-Flash</text>
+      </view>
+
+      <!-- 右侧：操作按钮 -->
+      <view class="header-actions">
+        <view class="icon-btn chat-btn" bindtap="toggleTts">
+          <text class="icon-text">{{ttsEnabled ? '🔊' : '🔈'}}</text>
+        </view>
+        <view class="action-divider"></view>
+        <view class="icon-btn refresh-btn" bindtap="resetChat">
+          <view class="refresh-icon">
+            <view class="refresh-arrow"></view>
+            <view class="refresh-circle"></view>
           </view>
         </view>
       </view>
-    </view>
-  </view>
-
-  <!-- 数字人区域 -->
-  <view class="digital-human-section animate-pop" style="margin-top: {{navHeight}}px; animation-delay: 0.1s;">
-    <view class="human-wrapper">
-      <!-- 数字人背后的遮罩/光晕 -->
-      <view class="human-backdrop"></view>
-      
-      <!-- 数字人图片 -->
-      <image 
-        class="human-avatar {{isSpeaking ? 'speaking' : ''}} {{loading ? 'thinking' : ''}}" 
-        src="/images/exx.gif" 
-        mode="aspectFit"
-      />
-
-      <!-- 声波动画 - 已移动到标题栏 -->
-
     </view>
   </view>
 
   <!-- 对话区域 -->
-  <view class="chat-section animate-fade-in" style="animation-delay: 0.2s;">
+  <view class="chat-section animate-fade-in">
     <!-- 顶部渐变隐藏遮罩 -->
     <view class="chat-fade-mask"></view>
 
-    <scroll-view 
-      scroll-y 
-      class="chat-scroll" 
-      scroll-into-view="{{scrollIntoView}}" 
+    <scroll-view
+      scroll-y
+      class="chat-scroll"
+      scroll-top="{{scrollTop}}"
       scroll-with-animation
-     style="height: 981rpx; display: block; box-sizing: border-box">
+      style="flex: 1; width: 100%;">
+      <!-- 内容容器 -->
+      <view class="chat-content">
       <!-- 欢迎消息 -->
       <view class="message-item ai-message animate-slide-up" style="animation-delay: 0.3s;">
-        <view class="message-bubble" style="position: relative; left: 0rpx; top: 19rpx">
+        <view class="message-bubble">
           <text class="message-text">你好呀！同学\n我是e小芯，有什么需要解答的吗？\n你可以问我关于奖学金、活动积分、请假流程等问题。</text>
-          
+
           <!-- 快速问题 -->
           <view class="quick-questions" wx:if="{{quickQuestions.length > 0}}">
             <view class="quick-title">💡 常见问题</view>
             <view class="quick-list">
               <block wx:for="{{quickQuestions}}" wx:key="id">
-                <view 
-                  class="quick-item {{index < 2 ? 'animate-slide-up' : ''}}" 
+                <view
+                  class="quick-item {{index < 2 ? 'animate-slide-up' : ''}}"
                   wx:if="{{index < 2 || showAllQuestions}}"
                   bindtap="onQuickQuestion"
                   data-question="{{item.question}}"
@@ -120,10 +82,10 @@
         <view class="message-item {{item.role === 'user' ? 'user-message' : 'ai-message'}}">
           <!-- 用户头像 -->
           <view class="avatar" wx:if="{{item.role === 'user'}}">
-            <image 
-              wx:if="{{userInfo.localAvatar || userInfo.avatarUrl}}" 
-              class="avatar-img" 
-              src="{{userInfo.localAvatar || userInfo.avatarUrl}}" 
+            <image
+              wx:if="{{userInfo.localAvatar || userInfo.avatarUrl}}"
+              class="avatar-img"
+              src="{{userInfo.localAvatar || userInfo.avatarUrl}}"
               mode="aspectFill"
             />
             <view wx:else class="avatar-text">
@@ -142,23 +104,34 @@
               <view class="dot"></view>
               <view class="dot"></view>
             </view>
+            <!-- AI消息播放按钮 -->
+            <view class="tts-play-btn" wx:if="{{item.role === 'ai' && item.content && ttsEnabled}}" bindtap="speakMessage" data-id="{{item.id}}">
+              <view class="play-icon {{ttsPlaying && ttsCurrentMsgId === item.id ? 'playing' : ''}}">
+                <view class="play-triangle" wx:if="{{!(ttsPlaying && ttsCurrentMsgId === item.id)}}"></view>
+                <view class="pause-bars" wx:else>
+                  <view class="bar"></view>
+                  <view class="bar"></view>
+                </view>
+              </view>
+            </view>
           </view>
         </view>
       </block>
 
       <!-- 底部锚点 -->
       <view id="bottom-anchor" style="height: 1rpx;"></view>
+      </view>
     </scroll-view>
   </view>
 
   <!-- 输入区域 -->
-  <view class="input-section animate-slide-up" style="animation-delay: 0.5s;">
+
+  <view class="input-section animate-slide-up" style="animation-delay: 0.5s; bottom: calc({{isIos ? iosBottom : androidBottom}}rpx + env(safe-area-inset-bottom));">
     <!-- 顶部渐变遮罩 -->
     <view class="input-fade-mask"></view>
-    
     <view class="input-container">
       <view class="input-wrapper">
-        <input 
+        <input
           class="input-box"
           value="{{inputValue}}"
           bindinput="onInput"
@@ -168,13 +141,16 @@
           placeholder-class="input-placeholder"
         />
       </view>
-      <button 
-        class="send-btn {{inputValue && !loading ? 'active' : ''}}" 
-        bindtap="onSend" 
+      <button
+        class="send-btn {{inputValue && !loading ? 'active' : ''}}"
+        bindtap="onSend"
         disabled="{{!inputValue || loading}}"
       >
         <image class="send-icon" src="/images/send-plane.png" mode="aspectFit" />
       </button>
     </view>
   </view>
+
+  <!-- 底部填充遮罩，确保覆盖到屏幕底部 -->
+  <view class="bottom-fill-mask" style="height: calc({{isIos ? iosBottom : androidBottom}}rpx + env(safe-area-inset-bottom) + 20rpx);"></view>
 </view>

@@ -58,16 +58,15 @@
     
     <!-- 搜索栏 -->
     <view class="search-section animate-fade-in" style="animation-delay: 0.2s;">
-      <view class="search-box {{!isLoggedIn ? 'disabled' : ''}}">
+      <view class="search-box">
         <icon class="search-icon" type="search" size="20" color="#FF5E5E" />
         <input
           class="search-input"
           type="text"
-          placeholder="{{isLoggedIn ? '搜索故事标题、摘要或关键词' : '登录后探索更多故事'}}"
+          placeholder="搜索故事标题、摘要或关键词"
           placeholder-class="placeholder-style"
           value="{{searchKeyword}}"
           bindinput="onSearchInput"
-          disabled="{{!isLoggedIn}}"
         />
         <view class="search-action" wx:if="{{searchKeyword}}" bindtap="onClearSearch">
           <icon type="clear" size="18" color="#CCCDDE" />
@@ -77,29 +76,29 @@
       <view class="search-shadow"></view>
     </view>
 
-    <!-- 未登录提示卡片 -->
-    <view class="login-wrapper animate-fade-in" style="animation-delay: 0.3s;" wx:if="{{!isLoggedIn}}">
-      <view class="login-glass-card" hover-class="card-hover" >
-        <view class="icon-box">
-          <image class="lock-img" src="/images/lock-icon.png" mode="aspectFit" wx:if="{{false}}"></image> <!-- 这里可以换图片，暂用文字代替 -->
-          <text style="font-size:24px;">🔒</text>
-        </view>
-        <view class="login-info">
-          <text class="login-h1">解锁完整体验</text>
-          <text class="login-p">登录即可浏览全部故事，同步积分轨迹</text>
-        </view>
-        <view class="login-btn" bindtap="goToAccount">去登录</view>
-      </view>
-    </view>
+
 
     <!-- 故事列表区域 -->
-    <view wx:if="{{isLoggedIn}}">
+    <view>
       <view class="section-header animate-fade-in" style="animation-delay: 0.3s;">
         <view class="header-left">
           <text class="title">最新故事</text>
           <text class="badge">New</text>
         </view>
       </view>
+      
+      <view class="login-wrapper animate-fade-in" style="animation-delay: 0.2s;" wx:if="{{!isLoggedIn}}">
+      <view class="login-glass-card" hover-class="card-hover">
+        <view class="icon-box">
+          <text style="font-size:22px;">🔐</text>
+        </view>
+        <view class="login-info">
+          <text class="login-h1">登录即可报名活动</text>
+          <text class="login-p">活动信息、积分成就一站同步</text>
+        </view>
+        <view class="login-btn">去登录</view>
+      </view>
+    </view>
 
       <view class="story-list">
         <!-- 空状态 -->
@@ -141,7 +140,7 @@
                 </view>
                 <view class="interaction-data">
                   <view class="data-item">
-                    <text class="icon">👁</text> {{item.views}}
+                    <text class="icon">📖</text> {{item.views}}
                   </view>
                   <view class="data-item liked">
                     <text class="icon">❤</text> {{item.likes}}

@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "账号设置"
+  "navigationStyle": "custom",
+  "navigationBarTitleText": "账号设置",
+  "usingComponents": {}
 }
-
-

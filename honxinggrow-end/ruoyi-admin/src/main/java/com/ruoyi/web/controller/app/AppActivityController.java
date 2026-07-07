@@ -49,12 +49,12 @@ public class AppActivityController extends BaseController
     @Autowired
     private ServerConfig serverConfig;
 
-    @PreAuthorize("@ss.hasAnyRoles('student,teacher')")
     @GetMapping("/list")
     public AjaxResult list(@RequestParam(value = "status", required = false) String status)
     {
-        // 获取当前用户的岗位ID列表
-        List<Long> userPostIds = postService.selectPostListByUserId(getUserId());
+        // 获取当前用户的岗位ID列表（未登录返回空列表）
+        Long userId = getCurrentUserId();
+        List<Long> userPostIds = userId != null ? postService.selectPostListByUserId(userId) : Collections.emptyList();
         List<HxActivity> activities = hxActivityService.selectAppActivities(resolveStatuses(status), userPostIds);
         Date now = DateUtils.getNowDate();
         List<Map<String, Object>> result = activities.stream().map(item -> {
@@ -126,7 +126,6 @@ public class AppActivityController extends BaseController
         return success(activities);
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('student,teacher')")
     @GetMapping("/{activityId}")
     public AjaxResult detail(@PathVariable Long activityId)
     {
@@ -135,7 +134,7 @@ public class AppActivityController extends BaseController
         {
             throw new ServiceException("活动不存在");
         }
-        Long userId = getUserId();
+        Long userId = getCurrentUserId();
         HxActivityParticipant participant = hxActivityService.getParticipant(activityId, userId);
         boolean joined = participant != null && "1".equals(participant.getStatus());
 
@@ -165,6 +164,21 @@ public class AppActivityController extends BaseController
         HxActivityParticipant participant = hxActivityService.submitParticipationProof(activityId, getUserId(),
                 request.getImageUrl());
         return success(buildParticipantResponse(participant));
+    }
+
+    /**
+     * 安全获取当前登录用户ID，未登录返回null
+     */
+    private Long getCurrentUserId()
+    {
+        try
+        {
+            return getUserId();
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
     }
 
     /**

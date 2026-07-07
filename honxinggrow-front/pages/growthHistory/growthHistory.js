@@ -8,11 +8,19 @@ Page({
     storyLikes: [],
     activities: [],
     points: [],
-    capsuleTop: 24
+    capsuleTop: 24,
+    refreshing: false
   },
   onLoad() {
     this.initHeader()
     this.animateIn()
+  },
+
+  onPullDownRefresh() {
+    this.setData({ refreshing: true })
+    this.loadData(() => {
+      this.setData({ refreshing: false })
+    })
   },
   
   initHeader() {
@@ -55,12 +63,14 @@ Page({
       this.setData({ pageAnim: anim2.export() })
     }, 50)
   },
-  loadData() {
-    this.setData({ loading: true })
-    wx.showLoading({
-      title: '加载中...',
-      mask: true
-    })
+  loadData(callback) {
+    this.setData({ loading: !this.data.refreshing }) // 如果是下拉刷新，不显示全屏加载
+    if (!this.data.refreshing) {
+      wx.showLoading({
+        title: '加载中...',
+        mask: true
+      })
+    }
     request({
       url: '/app/points/growth-history',
       method: 'get',
@@ -88,7 +98,12 @@ Page({
         icon: 'none'
       })
     }).finally(() => {
-      wx.hideLoading()
+      if (!this.data.refreshing) {
+        wx.hideLoading()
+      }
+      if (typeof callback === 'function') {
+        callback()
+      }
     })
   },
   drawCharts() {

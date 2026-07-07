@@ -28,7 +28,8 @@ Page({
     rewardPoints: 0,
     canSubmitProof: false,
     proofUploading: false,
-    capsuleTop: 24
+    capsuleTop: 24,
+    isLoggedIn: false
   },
   onLoad(options) {
     const { id } = options
@@ -50,7 +51,8 @@ Page({
   },
   onShow() {
     const app = getApp()
-    if (!app.ensureLogin()) return
+    const isLoggedIn = !!app.globalData.token
+    this.setData({ isLoggedIn })
     this.animateIn()
     this.loadDetail()
   },
@@ -196,6 +198,8 @@ Page({
     }
   },
   joinActivity() {
+    const app = getApp()
+    if (!app.ensureLogin()) return
     if (this.data.joined && this.data.enrollStatus !== '2') {
       wx.showToast({ title: '您已报名该活动', icon: 'none' })
       return
@@ -227,6 +231,8 @@ Page({
     })
   },
   chooseProofImage() {
+    const app = getApp()
+    if (!app.ensureLogin()) return
     if (!this.data.joined) {
       wx.showToast({ title: '请先报名活动', icon: 'none' })
       return

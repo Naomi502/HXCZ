@@ -19,9 +19,7 @@ Page({
     const app = getApp()
     const isLoggedIn = !!app.globalData.token
     this.setData({ isLoggedIn })
-    if (isLoggedIn) {
-      this.loadActivities()
-    }
+    this.loadActivities()
   },
   onShow() {
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
@@ -48,24 +46,15 @@ Page({
     const isLoggedIn = !!app.globalData.token
     if (isLoggedIn !== this.data.isLoggedIn) {
       this.setData({ isLoggedIn })
-      if (isLoggedIn && !this.data.hasLoaded) {
+      if (!this.data.hasLoaded) {
         this.loadActivities()
       }
     }
   },
   onPullDownRefresh() {
-    if (!this.data.isLoggedIn) {
-      wx.stopPullDownRefresh()
-      return
-    }
     this.loadActivities(() => wx.stopPullDownRefresh())
   },
   loadActivities(callback) {
-    if (!this.data.isLoggedIn) {
-      this.setData({ loading: false })
-      if (typeof callback === 'function') callback()
-      return
-    }
     this.setData({ loading: true })
     // 请求所有活动，后台已经计算好状态
     request({
@@ -156,10 +145,6 @@ Page({
   },
   viewDetail(e) {
     const id = e.currentTarget.dataset.id
-    const app = getApp()
-    if (!app.ensureLogin()) {
-      return
-    }
     wx.navigateTo({
       url: `/pages/activityDetail/activityDetail?id=${id}`
     })

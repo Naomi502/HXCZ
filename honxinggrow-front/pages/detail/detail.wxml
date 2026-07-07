@@ -80,6 +80,7 @@
         </view>
         
         <button 
+          wx:if="{{isLoggedIn}}"
           class="like-fab {{hasLiked ? 'active' : ''}}" 
           bindtap="handleLike"
           disabled="{{hasLiked}}"
@@ -89,6 +90,11 @@
           <text class="fab-text">{{hasLiked ? '已点赞' : '点赞'}}</text>
           <view class="fab-count" wx:if="{{detailData.likeCount > 0}}">{{detailData.likeCount}}</view>
         </button>
+        <view wx:if="{{!isLoggedIn}}" class="like-fab" bindtap="handleLike">
+          <text class="fab-icon">🤍</text>
+          <text class="fab-text">登录后点赞</text>
+          <view class="fab-count" wx:if="{{detailData.likeCount > 0}}">{{detailData.likeCount}}</view>
+        </view>
       </view>
     </view>
 

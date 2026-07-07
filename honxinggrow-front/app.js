@@ -1,36 +1,55 @@
 const { request } = require('./utils/request')
+const { clearCache } = require('./utils/guestCache')
+const envConfig = require('./config/env')
 
 App({
   globalData: {
-    // 开发环境(develop)默认不使用云函数(连本地)，体验版(trial)和正式版(release)默认使用云函数
-    // 你也可以手动修改这里的 useCloud 值为 true 或 false 来强制切换
-    useCloud: wx.getAccountInfoSync().miniProgram.envVersion !== 'develop', 
-    apiBaseUrl: wx.getAccountInfoSync().miniProgram.envVersion === 'develop' 
-      ? 'http://localhost:8080' 
-      : 'http://59.110.229.252/prod-api',
+    env: envConfig.currentEnv,
+    apiBaseUrl: '',
     token: '',
     userInfo: null,
     profile: null,
     wechatBound: false,
     shouldShowLoginModal: false,
     isTabSwitch: false,
-    unreadCount: 0 // 全局未读消息数
+    unreadCount: 0
+  },
+  
+  getApiBaseUrl() {
+    if (this.globalData.apiBaseUrl) {
+      return this.globalData.apiBaseUrl
+    }
+    
+    const config = envConfig.getEnvConfig()
+    this.globalData.apiBaseUrl = config.apiBaseUrl
+    
+    return this.globalData.apiBaseUrl
+  },
+  
+  setEnv(envName) {
+    if (envConfig.setEnv(envName)) {
+      this.globalData.env = envName
+      this.globalData.apiBaseUrl = ''
+      return this.getApiBaseUrl()
+    }
+    return null
   },
   onLaunch() {
     const token = wx.getStorageSync('token')
     if (token) {
       this.globalData.token = token
     }
-    // 初始化云开发环境
-    wx.cloud.init({
-      env: 'nan-5gbkqqnf229a1fe4', // 请替换为你的云开发环境ID
-      traceUser: true
-    })
+    
+    this.getApiBaseUrl()
+    
+    console.log('[ENV] 当前环境:', this.globalData.env)
+    console.log('[ENV] API地址:', this.globalData.apiBaseUrl)
   },
   setToken(token) {
     if (token) {
       this.globalData.token = token.startsWith('Bearer ') ? token.substring(7) : token
       wx.setStorageSync('token', this.globalData.token)
+      clearCache()
     } else {
       this.globalData.token = ''
       wx.removeStorageSync('token')

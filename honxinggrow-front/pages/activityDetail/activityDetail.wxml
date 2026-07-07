@@ -155,7 +155,7 @@
 </view>
 
 <!-- 底部固定操作栏 -->
-<view wx:if="{{!loading}}" class="bottom-bar-glass">
+<view wx:if="{{!loading && isLoggedIn}}" class="bottom-bar-glass">
   <view class="bar-inner">
     <!-- 未报名状态：显示操作按钮 -->
     <button class="main-btn" 
@@ -170,5 +170,3 @@
     <!-- 已报名/审核中状态：右上角印章展示，底部不显示按钮 -->
   </view>
 </view>
-
-<!-- 底部固定操作栏 -->

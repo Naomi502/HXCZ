@@ -118,6 +118,12 @@
         <el-form-item label="TTS 音色" prop="ttsVoice">
             <el-input v-model="aiConfigForm.ttsVoice" placeholder="例如: Cherry" />
         </el-form-item>
+        <el-form-item label="实时 TTS 模型" prop="ttsRealtimeModel">
+            <el-input v-model="aiConfigForm.ttsRealtimeModel" placeholder="例如: qwen3-tts-flash-realtime" />
+        </el-form-item>
+        <el-form-item label="实时 TTS 音色" prop="ttsRealtimeVoice">
+            <el-input v-model="aiConfigForm.ttsRealtimeVoice" placeholder="例如: Cherry" />
+        </el-form-item>
         <el-form-item label="提示词模板" prop="promptTemplate">
           <el-input type="textarea" v-model="aiConfigForm.promptTemplate" :rows="15" placeholder="支持占位符: {reference} 和 {question}" />
         </el-form-item>

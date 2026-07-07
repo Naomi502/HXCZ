@@ -72,7 +72,7 @@ public class AppStoryController extends BaseController
     @GetMapping("/{storyId}")
     public AjaxResult detail(@PathVariable Long storyId)
     {
-        Long userId = getUserId();
+        Long userId = getCurrentUserId();
         HxStory story = hxStoryService.readStory(storyId, userId);
         decorateStory(story);
         
@@ -101,6 +101,21 @@ public class AppStoryController extends BaseController
             return success(result);
         }
         return error("点赞失败");
+    }
+
+    /**
+     * 安全获取当前登录用户ID，未登录返回null
+     */
+    private Long getCurrentUserId()
+    {
+        try
+        {
+            return getUserId();
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
     }
 
     private boolean isStudent()

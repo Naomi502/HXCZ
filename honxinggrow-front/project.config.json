@@ -5,7 +5,7 @@
     "include": []
   },
   "setting": {
-    "urlCheck": true,
+    "urlCheck": false,
     "es6": true,
     "enhance": true,
     "postcss": true,
@@ -44,7 +44,7 @@
   },
   "compileType": "miniprogram",
   "libVersion": "3.13.2",
-  "appid": "wx48ccc49d8565ef67",
+  "appid": "wx4b9fb1c18d74887d",
   "projectname": "honxinggrow",
   "isGameTourist": false,
   "simulatorType": "wechat",

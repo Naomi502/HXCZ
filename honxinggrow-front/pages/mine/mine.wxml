@@ -137,7 +137,7 @@
     
     <!-- 未登录提示 -->
     <view class="login-guide animate-slide-up" style="animation-delay: 0.2s;" wx:if="{{!isLoggedIn}}">
-      <image class="guide-img" src="/images/login-bg.svg" mode="aspectFit"></image> <!-- 假设有个图，没有就用文字 -->
+      <image class="guide-img" src="/images/banner.jpg" mode="aspectFit"></image>
       <view class="guide-text">登录后开启红芯之旅</view>
       <button class="guide-btn" bindtap="showLoginModal">立即登录</button>
     </view>

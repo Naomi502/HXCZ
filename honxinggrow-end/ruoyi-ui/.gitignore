@@ -1,23 +1,33 @@
+# OS
 .DS_Store
+Thumbs.db
+
+# Dependencies
 node_modules/
+
+# Build
 dist/
+
+# Logs
+**/*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-**/*.log
 
+# Test
 tests/**/coverage/
 tests/e2e/reports
 selenium-debug.log
 
-# Editor directories and files
-.idea
-.vscode
+# IDE
+.idea/
+.vscode/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.local
 
-package-lock.json
-yarn.lock
+# Lock files (optional - uncomment if you want to ignore)
+# package-lock.json
+# yarn.lock

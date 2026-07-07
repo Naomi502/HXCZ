@@ -161,8 +161,6 @@ Page({
     this.ttsPlaying = true
     this.setData({ isSpeaking: true })
     
-    // 统一使用 request.request。
-    // 在生产环境下(useCloud: true)，request.request 会自动调用 callApi 云函数转发到后端 /hx/ai/tts
     request.request({
       url: '/hx/ai/tts',
       method: 'POST',
@@ -500,11 +498,6 @@ Page({
     })
     this.currentAiMsgIndex = newMsgList.length - 1
     
-    // 生产环境/体验版走云函数转发（不支持流式），开发环境走本地连接（支持流式）
-    if (app.globalData.useCloud) {
-      this.fallbackToNonStream(content)
-    } else {
-      this.startStream(content, aiMsgId)
-    }
+    this.startStream(content, aiMsgId)
   }
 })

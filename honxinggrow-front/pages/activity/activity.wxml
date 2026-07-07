@@ -47,6 +47,17 @@
   <!-- === 主体内容区 === -->
   <view class="main-container">
     
+
+
+    <!-- 活动列表区域 -->
+    <view>
+      <!-- 标题栏 -->
+      <view class="section-header animate-fade-in" style="animation-delay: 0.3s;">
+        <view class="header-left">
+          <text class="title">热门活动</text>
+          <text class="badge">Hot</text>
+      </view>
+      </view>
     <!-- 登录引导 (未登录时显示) -->
     <view class="login-wrapper animate-fade-in" style="animation-delay: 0.2s;" wx:if="{{!isLoggedIn}}">
       <view class="login-glass-card" hover-class="card-hover">
@@ -60,18 +71,7 @@
         <view class="login-btn">去登录</view>
       </view>
     </view>
-
-    <!-- 活动列表区域 -->
-    <view wx:if="{{isLoggedIn}}">
-      <!-- 标题栏 -->
-      <view class="section-header animate-fade-in" style="animation-delay: 0.3s;">
-        <view class="header-left">
-          <text class="title">热门活动</text>
-          <text class="badge">Hot</text>
-        </view>
-
-      </view>
-
+    
       <view class="activity-list">
         <!-- 空状态 -->
         <view class="empty-state animate-fade-in" wx:if="{{filteredActivities.length === 0 && !loading}}">
