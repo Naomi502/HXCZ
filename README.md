@@ -19,6 +19,26 @@
 
 ---
 
+## 界面预览
+
+### 小程序端
+
+| 主页 | 活动列表 | 活动详情 |
+| --- | --- | --- |
+| ![主页](photo/home.png) | ![活动列表](photo/activity.png) | ![活动详情](photo/activity-detail.png) |
+
+| AI 问答 | 个人中心 | 登录 |
+| --- | --- | --- |
+| ![AI 问答](photo/ai-qa.png) | ![个人中心](photo/profile.jpg) | ![登录](photo/login.png) |
+
+### 管理后台
+
+| 后台管理主页 |
+| --- |
+| ![后台管理主页](photo/admin-dashboard.png) |
+
+---
+
 ## 功能特性
 
 ### 小程序端
@@ -83,6 +103,7 @@ HXCZ/
 │   ├── utils/                # 工具类（请求、TTS、上传等）
 │   ├── cloudfunctions/       # 微信云函数
 │   └── images/               # 图片资源
+├── photo/                    # 项目截图
 ├── upload/                   # 运行时上传文件目录
 ├── .env.example              # 环境变量示例
 ├── LICENSE                   # 版权声明
